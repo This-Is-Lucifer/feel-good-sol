@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, RefreshCw, ClipboardList } from "lucide-react";
+import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, RefreshCw, ClipboardList, Download } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import html2pdf from "html2pdf.js";
 
 interface CheckinAnswer {
   question: string;
@@ -147,6 +148,20 @@ const PersonalizedIntelligence = () => {
   const [revealedSections, setRevealedSections] = useState(0);
   const [checkinData, setCheckinData] = useState<CheckinAnswer[]>([]);
   const [report, setReport] = useState<ReportSection[]>([]);
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const downloadPDF = () => {
+    if (!reportRef.current) return;
+    const opt = {
+      margin: [0.5, 0.5] as [number, number],
+      filename: "MindFlow-Trading-Mind-Report.pdf",
+      image: { type: "jpeg" as const, quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#111318" },
+      jsPDF: { unit: "in" as const, format: "a4" as const, orientation: "portrait" as const },
+    };
+    html2pdf().set(opt).from(reportRef.current).save();
+    toast({ title: "Downloading PDF", description: "Your report is being generated..." });
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem("mindflow_checkin");
@@ -349,7 +364,7 @@ const PersonalizedIntelligence = () => {
 
         {/* Report */}
         {showReport && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <motion.div ref={reportRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {/* Overall score */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -417,14 +432,21 @@ const PersonalizedIntelligence = () => {
               ))}
             </div>
 
-            {/* Regenerate */}
+            {/* Actions */}
             {revealedSections >= report.length && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="flex justify-center gap-4 mt-8"
+                className="flex flex-wrap justify-center gap-3 mt-8"
               >
+                <button
+                  onClick={downloadPDF}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-primary/30 bg-primary/10 text-primary text-sm font-display font-medium hover:bg-primary/15 transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  Download PDF
+                </button>
                 <button
                   onClick={generateReport}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm font-display font-medium hover:bg-secondary/80 transition-colors"
