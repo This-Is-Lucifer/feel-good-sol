@@ -20,7 +20,7 @@ const WalletConnect = () => {
   };
 
   const connectPhantom = async () => {
-    setShowDropdown(false);
+
 
     if (isInIframe()) {
       toast({
