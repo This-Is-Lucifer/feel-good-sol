@@ -160,10 +160,10 @@ const mockEmotions = [
 ];
 
 const EmotionalAI = () => {
-  // Pick 9 random questions + 1 camera question = 10 total
+  // Camera first + 9 random questions = 10 total
   const questions = useMemo(() => {
     const picked = shuffleAndPick(questionPool, 9);
-    return [...picked, cameraQuestion];
+    return [cameraQuestion, ...picked];
   }, []);
 
   const [currentQ, setCurrentQ] = useState(0);
