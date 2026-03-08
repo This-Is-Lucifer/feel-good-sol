@@ -46,7 +46,7 @@ const Index = () => {
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-display mb-6">
             <Shield className="w-3 h-3" />
-            Trusted by 12,000+ Solana traders
+            Trusted by 100+ Solana traders
           </div>
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight tracking-tight">
             Trade Smarter,
