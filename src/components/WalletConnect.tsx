@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Wallet, ChevronDown, RefreshCw, LogOut } from "lucide-react";
+import { Wallet, ChevronDown, RefreshCw, LogOut, Copy, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const WalletConnect = () => {
   const [connected, setConnected] = useState(false);
