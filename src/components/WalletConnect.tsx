@@ -33,16 +33,24 @@ const WalletConnect = () => {
 
     const phantom = (window as any)?.phantom?.solana || (window as any)?.solana;
 
+    console.log("Phantom provider:", phantom);
+    console.log("isPhantom:", phantom?.isPhantom);
+
     if (phantom?.isPhantom) {
       try {
-        const resp = await phantom.connect();
+        const resp = await phantom.connect({ onlyIfTrusted: false });
         const addr = resp.publicKey.toString();
         setAddress(addr);
         setConnected(true);
         setWalletType("phantom");
         toast({ title: "Phantom connected", description: addr.slice(0, 8) + "..." });
-      } catch {
-        toast({ title: "Connection rejected", description: "You declined the Phantom request.", variant: "destructive" });
+      } catch (err: any) {
+        console.error("Phantom connect error:", err);
+        toast({
+          title: "Connection failed",
+          description: err?.message || "Phantom connection was rejected or timed out.",
+          variant: "destructive",
+        });
       }
     } else {
       toast({ title: "Phantom not found", description: "Redirecting to install Phantom..." });
@@ -64,6 +72,9 @@ const WalletConnect = () => {
 
     const ethereum = (window as any)?.ethereum;
 
+    console.log("Ethereum provider:", ethereum);
+    console.log("isMetaMask:", ethereum?.isMetaMask);
+
     if (ethereum?.isMetaMask) {
       try {
         const accounts = await ethereum.request({ method: "eth_requestAccounts" });
@@ -72,8 +83,13 @@ const WalletConnect = () => {
         setConnected(true);
         setWalletType("metamask");
         toast({ title: "MetaMask connected", description: addr.slice(0, 8) + "..." });
-      } catch {
-        toast({ title: "Connection rejected", description: "You declined the MetaMask request.", variant: "destructive" });
+      } catch (err: any) {
+        console.error("MetaMask connect error:", err);
+        toast({
+          title: "Connection failed",
+          description: err?.message || "MetaMask connection was rejected.",
+          variant: "destructive",
+        });
       }
     } else {
       toast({ title: "MetaMask not found", description: "Redirecting to install MetaMask..." });
