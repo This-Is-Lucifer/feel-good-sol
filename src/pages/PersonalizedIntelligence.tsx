@@ -225,7 +225,7 @@ const PersonalizedIntelligence = () => {
 
     // Check-in data
     if (checkinData.length > 0) {
-      if (y > 220) { doc.addPage(); y = 20; doc.setFillColor(17, 19, 24); doc.rect(0, 0, pageWidth, doc.internal.pageSize.getHeight(), "F"); }
+      if (y > 220) { newPage(); }
       addGap(4);
       addText("Check-in Responses", 12, "bold", [56, 209, 187]);
       addGap(4);
