@@ -171,7 +171,19 @@ const Support = () => {
 
         {/* Wallet Address */}
         <div className="bg-card/60 backdrop-blur-xl border border-border rounded-2xl p-5">
-          <p className="text-xs text-muted-foreground mb-2 font-body">Or send manually to:</p>
+          <p className="text-xs text-muted-foreground mb-4 font-body">Or send manually to:</p>
+          <div className="flex flex-col items-center gap-4 mb-4">
+            <div className="bg-white p-3 rounded-xl">
+              <QRCodeSVG
+                value={`solana:${RECIPIENT_WALLET}`}
+                size={160}
+                bgColor="#ffffff"
+                fgColor="#000000"
+                level="H"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">Scan with your Solana wallet</p>
+          </div>
           <div className="flex items-center gap-2">
             <code className="flex-1 text-xs text-foreground/80 bg-secondary/50 rounded-lg px-3 py-2 overflow-hidden text-ellipsis">
               {RECIPIENT_WALLET}
