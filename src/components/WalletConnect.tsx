@@ -191,12 +191,8 @@ const WalletConnect = () => {
               {connected ? (
                 <span className="flex items-center gap-2">
                   <span className="font-mono tracking-wide">{truncated}</span>
-                  {balanceDisplay && (
-                    <>
-                      <span className="w-1 h-1 rounded-full bg-primary/50" />
-                      <span className="text-xs text-primary/70">{balanceDisplay}</span>
-                    </>
-                  )}
+                  <span className="w-1 h-1 rounded-full bg-primary/50" />
+                  <span className="text-xs text-primary/70">{balanceDisplay}</span>
                 </span>
               ) : (
                 "Connect Wallet"
