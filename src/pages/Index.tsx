@@ -159,7 +159,7 @@ const Index = () => {
           className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-16"
         >
           {[
-            { icon: Users, value: "12,400+", label: "Active Traders" },
+            { icon: Users, value: "50+", label: "Active Traders" },
             { icon: MessageCircle, value: "89,000+", label: "AI Sessions" },
             { icon: TrendingUp, value: "34%", label: "Avg. Stress Reduction" },
             { icon: Globe, value: "7+", label: "Countries" },
