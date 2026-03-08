@@ -1,25 +1,40 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Wallet } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const WalletConnect = () => {
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState("");
 
   const handleConnect = async () => {
-    // Check for Phantom wallet
     const solana = (window as any)?.solana;
-    if (solana?.isPhantom) {
+    const phantom = (window as any)?.phantom?.solana;
+    const provider = phantom || solana;
+
+    if (provider?.isPhantom) {
       try {
-        const resp = await solana.connect();
+        const resp = await provider.connect();
         const addr = resp.publicKey.toString();
         setAddress(addr);
         setConnected(true);
+        toast({ title: "Wallet connected", description: addr.slice(0, 8) + "..." });
       } catch {
-        // User rejected
+        toast({ title: "Connection rejected", description: "You declined the wallet request.", variant: "destructive" });
       }
     } else {
-      window.open("https://phantom.app/", "_blank");
+      // Detect if running in iframe (preview)
+      const inIframe = window.self !== window.top;
+      if (inIframe) {
+        toast({
+          title: "Open in a new tab",
+          description: "Wallet extensions can't be accessed inside the preview. Open the published URL directly in your browser.",
+          variant: "destructive",
+        });
+      } else {
+        toast({ title: "Phantom not found", description: "Redirecting to install Phantom..." });
+        window.open("https://phantom.app/", "_blank");
+      }
     }
   };
 
