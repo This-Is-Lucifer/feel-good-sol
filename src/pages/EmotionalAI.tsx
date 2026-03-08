@@ -78,15 +78,21 @@ const EmotionalAI = () => {
 
   const q = questions[currentQ];
 
+  const [cameraError, setCameraError] = useState(false);
+
   const startCamera = useCallback(async () => {
+    setCameraError(false);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play();
+        };
         setCameraActive(true);
       }
     } catch {
-      // Camera not available
+      setCameraError(true);
     }
   }, []);
 
