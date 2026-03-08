@@ -75,6 +75,7 @@ const EmotionalAI = () => {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const q = questions[currentQ];
 
