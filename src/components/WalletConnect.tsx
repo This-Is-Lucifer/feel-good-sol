@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Wallet, ChevronDown } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 type WalletType = "phantom" | "metamask" | null;
