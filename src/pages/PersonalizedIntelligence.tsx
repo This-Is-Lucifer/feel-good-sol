@@ -18,60 +18,114 @@ interface ReportSection {
   recommendation: string;
 }
 
-const mockReport: ReportSection[] = [
-  {
-    title: "Emotional Stability",
-    icon: Heart,
-    color: "text-primary",
-    score: 72,
-    insight:
-      "Your emotional baseline shows moderate stability with occasional spikes in anxiety during high-volatility periods. You tend to feel most stressed between 2–4 PM UTC when US markets overlap with crypto activity.",
-    recommendation:
-      "Consider stepping away from charts during peak volatility windows. Set price alerts instead of watching live feeds.",
-  },
-  {
-    title: "FOMO Resistance",
-    icon: Shield,
-    color: "text-emerald-400",
-    score: 45,
-    insight:
-      "Your FOMO index is moderately high. Historical patterns suggest you're 3x more likely to enter a position after seeing social media hype rather than independent analysis.",
-    recommendation:
-      "Implement a 30-minute cooling period before executing any trade triggered by social media. Journal the impulse first.",
-  },
-  {
-    title: "Risk Tolerance Alignment",
-    icon: AlertTriangle,
-    color: "text-yellow-400",
-    score: 61,
-    insight:
-      "There's a mismatch between your stated risk tolerance (moderate) and actual behavior (aggressive). Your average position size is 2.3x higher during emotional trading sessions.",
-    recommendation:
-      "Pre-define max position sizes when calm. Use automated stop-losses to prevent emotional override during drawdowns.",
-  },
-  {
-    title: "Decision Quality",
-    icon: TrendingUp,
-    color: "text-blue-400",
-    score: 78,
-    insight:
-      "When you trade with a plan, your win rate is 68%. Without a plan, it drops to 34%. Your best decisions come in the morning before market noise accumulates.",
-    recommendation:
-      "Front-load your trading decisions to morning hours. Write trade theses before market open and stick to them.",
-  },
-  {
-    title: "Stress Recovery",
-    icon: Zap,
-    color: "text-purple-400",
-    score: 55,
-    insight:
-      "After a significant loss, it takes you an average of 2.4 days to return to baseline emotional state. During recovery, you're prone to revenge trading.",
-    recommendation:
-      "After any loss exceeding 5% of your portfolio, enforce a mandatory 48-hour trading pause. Use the time for journaling and reflection.",
-  },
-];
+// Maps check-in answers to dynamic scores and insights
+function generateDynamicReport(data: CheckinAnswer[]): ReportSection[] {
+  const getAnswer = (questionFragment: string) =>
+    data.find((d) => d.question.toLowerCase().includes(questionFragment.toLowerCase()))?.answer;
 
-const overallScore = Math.round(mockReport.reduce((sum, s) => sum + s.score, 0) / mockReport.length);
+  const mood = getAnswer("feeling right now");
+  const stress = getAnswer("stressed do you feel");
+  const emotionalDesc = getAnswer("emotional state");
+  const impulsive = getAnswer("impulsive trades");
+  const fomo = getAnswer("FOMO");
+  const driver = getAnswer("driving your trading");
+
+  // --- Emotional Stability ---
+  const moodScoreMap: Record<string, number> = { Great: 90, Good: 75, Neutral: 60, Anxious: 35, Stressed: 20 };
+  const stressVal = typeof stress === "number" ? stress : 5;
+  const moodBase = typeof mood === "string" ? moodScoreMap[mood] ?? 60 : 60;
+  const emotionalStability = Math.round((moodBase + (100 - stressVal * 10)) / 2);
+
+  const moodInsightMap: Record<string, string> = {
+    Great: `You reported feeling great with a stress level of ${stressVal}/10. Your emotional baseline is strong — you're in an optimal state for clear-headed decisions.`,
+    Good: `You're feeling good with a stress level of ${stressVal}/10. Solid emotional footing, though monitoring stress during volatile periods will help maintain this.`,
+    Neutral: `Your mood is neutral with stress at ${stressVal}/10. You're neither energized nor drained — a stable but potentially disengaged state for trading.`,
+    Anxious: `You indicated feeling anxious with stress at ${stressVal}/10. Anxiety can lead to premature exits and second-guessing. Consider grounding exercises before trading.`,
+    Stressed: `You're feeling stressed with a high stress level of ${stressVal}/10. This state significantly impairs decision-making. Trading under stress often leads to reactive, loss-generating behavior.`,
+  };
+  const emotionalInsight = typeof mood === "string" ? moodInsightMap[mood] ?? `Your mood is ${mood} with stress at ${stressVal}/10.` : `Stress level reported at ${stressVal}/10.`;
+  const emotionalRec = emotionalStability >= 70
+    ? "Maintain your current routines — they're supporting emotional clarity. Consider journaling to preserve this baseline."
+    : emotionalStability >= 50
+    ? "Introduce a 5-minute breathing exercise before trading sessions. Set hard stop-loss levels while calm."
+    : "Strongly consider pausing active trading today. High stress correlates with 40% worse outcomes. Use this time for analysis only.";
+
+  // --- FOMO Resistance ---
+  const fomoVal = typeof fomo === "number" ? fomo : 5;
+  const driverPenalty = driver === "Social media hype" ? 20 : driver === "Fear of missing out" ? 25 : driver === "Gut feeling" ? 10 : 0;
+  const fomoScore = Math.max(5, Math.min(95, 100 - fomoVal * 10 - driverPenalty));
+
+  const fomoInsight = fomoVal >= 7
+    ? `Your FOMO level is very high at ${fomoVal}/10${driver ? `, and your decisions are driven by "${driver}"` : ""}. This combination makes you highly susceptible to chasing pumps and entering at local tops.`
+    : fomoVal >= 4
+    ? `Your FOMO sits at ${fomoVal}/10 — moderate but present${driver ? `. You noted "${driver}" as your primary trading driver` : ""}. This could lead to oversized positions during hype cycles.`
+    : `FOMO is well-controlled at ${fomoVal}/10${driver ? `. Your decisions are driven by "${driver}"` : ""} — a disciplined approach that protects capital.`;
+
+  const fomoRec = fomoScore < 40
+    ? "Implement a strict 30-minute rule: after seeing any opportunity, wait 30 minutes before acting. Write down your thesis — if it doesn't hold up on paper, don't trade it."
+    : fomoScore < 70
+    ? "You have moderate FOMO resistance. Consider pre-defining your watchlist at the start of each day and only trading assets on that list."
+    : "Your FOMO resistance is strong. Continue relying on data-driven decisions and maintaining your disciplined approach.";
+
+  // --- Risk Tolerance ---
+  const impulsiveScoreMap: Record<string, number> = { "Yes, several": 20, "One or two": 45, "I almost did": 55, No: 85 };
+  const riskScore = typeof impulsive === "string" ? impulsiveScoreMap[impulsive] ?? 60 : 60;
+
+  const riskInsight = typeof impulsive === "string"
+    ? impulsive === "No"
+      ? "You reported no impulsive trades in the last 24 hours. Your behavior aligns well with measured risk-taking — a strong indicator of disciplined trading."
+      : impulsive === "I almost did"
+      ? "You nearly made an impulsive trade but held back. The self-awareness to pause is valuable, but the urge itself signals underlying emotional pressure on your risk framework."
+      : impulsive === "One or two"
+      ? "You made 1-2 impulsive trades recently. This moderate level of impulsivity suggests your risk tolerance boundaries may shift under pressure, potentially leading to oversized losses."
+      : "Multiple impulsive trades indicate a significant breakdown in risk management. When emotions override strategy, position sizes and stop-losses become afterthoughts."
+    : "Impulsive trading patterns were not assessed in this check-in.";
+
+  const riskRec = riskScore < 40
+    ? "Enforce position size limits: no single trade should exceed 2% of your portfolio. Remove the ability to increase size mid-trade by using pre-set orders only."
+    : riskScore < 70
+    ? "Before each trade, rate your emotional state 1-10. If above 6, reduce position size by 50%. This simple check prevents emotional overrides."
+    : "Your risk discipline is solid. Consider reviewing your risk framework monthly to ensure it evolves with your portfolio size.";
+
+  // --- Decision Quality ---
+  const decisionBase = driver === "Research & data" ? 85 : driver === "Gut feeling" ? 50 : driver === "Social media hype" ? 30 : driver === "Fear of missing out" ? 25 : 60;
+  const decisionScore = Math.round((decisionBase + riskScore) / 2);
+
+  const decisionInsight = typeof driver === "string"
+    ? driver === "Research & data"
+      ? `Your decisions are driven by research and data — the highest quality input. Combined with ${typeof impulsive === "string" ? `"${impulsive}"` : "your"} impulsive trading level, your decision framework is ${decisionScore >= 70 ? "strong" : "showing some cracks under pressure"}.`
+      : `Your primary decision driver is "${driver}", which tends to produce ${decisionBase >= 50 ? "moderate" : "lower"} quality outcomes. ${emotionalDesc ? `You described your emotional state as "${emotionalDesc}", which may be influencing this pattern.` : ""}`
+    : "Decision quality could not be fully assessed without knowing your primary trading driver.";
+
+  const decisionRec = decisionScore >= 70
+    ? "Your decision-making process is sound. Strengthen it further by keeping a trade journal: log your thesis, entry, exit, and emotional state for each trade."
+    : decisionScore >= 50
+    ? "Shift toward data-driven decisions by requiring at least 2 confirming indicators before entering any trade. Reduce reliance on social signals."
+    : "Your decision quality needs significant improvement. Consider paper trading for a week while building a structured analysis framework before risking real capital.";
+
+  // --- Stress Recovery ---
+  const recoveryScore = Math.round((emotionalStability + riskScore) / 2);
+
+  const recoveryInsight = `Based on your current mood (${mood ?? "unknown"}) and stress level (${stressVal}/10), your estimated stress recovery capacity is ${recoveryScore >= 70 ? "good" : recoveryScore >= 50 ? "moderate" : "concerning"}. ${
+    riskScore < 50
+      ? "Combined with impulsive trading behavior, losses may trigger revenge trading cycles."
+      : "Your controlled approach to risk helps buffer emotional recovery after drawdowns."
+  }`;
+
+  const recoveryRec = recoveryScore < 50
+    ? "After any loss exceeding 3% of your portfolio, enforce a mandatory 48-hour trading pause. Use this time for physical activity and journaling — not chart-watching."
+    : recoveryScore < 70
+    ? "Build a post-loss routine: review the trade objectively, identify if it was a process or outcome error, then take a minimum 4-hour break before the next trade."
+    : "Your recovery capacity is strong. Maintain your current habits and consider mentoring other traders — teaching reinforces your own emotional discipline.";
+
+  return [
+    { title: "Emotional Stability", icon: Heart, color: "text-primary", score: emotionalStability, insight: emotionalInsight, recommendation: emotionalRec },
+    { title: "FOMO Resistance", icon: Shield, color: "text-emerald-400", score: fomoScore, insight: fomoInsight, recommendation: fomoRec },
+    { title: "Risk Tolerance Alignment", icon: AlertTriangle, color: "text-yellow-400", score: riskScore, insight: riskInsight, recommendation: riskRec },
+    { title: "Decision Quality", icon: TrendingUp, color: "text-blue-400", score: decisionScore, insight: decisionInsight, recommendation: decisionRec },
+    { title: "Stress Recovery", icon: Zap, color: "text-purple-400", score: recoveryScore, insight: recoveryInsight, recommendation: recoveryRec },
+  ];
+}
 
 const getScoreColor = (score: number) => {
   if (score >= 70) return "text-primary";
@@ -91,6 +145,7 @@ const PersonalizedIntelligence = () => {
   const [showReport, setShowReport] = useState(false);
   const [revealedSections, setRevealedSections] = useState(0);
   const [checkinData, setCheckinData] = useState<CheckinAnswer[]>([]);
+  const [report, setReport] = useState<ReportSection[]>([]);
 
   useEffect(() => {
     const saved = localStorage.getItem("mindflow_checkin");
@@ -105,15 +160,20 @@ const PersonalizedIntelligence = () => {
     setRevealedSections(0);
 
     setTimeout(() => {
+      const generated = generateDynamicReport(checkinData);
+      setReport(generated);
       setGenerating(false);
       setShowReport(true);
 
-      // Reveal sections one by one
-      mockReport.forEach((_, i) => {
+      generated.forEach((_, i) => {
         setTimeout(() => setRevealedSections(i + 1), 400 * (i + 1));
       });
     }, 2500);
   };
+
+  const overallScore = report.length > 0
+    ? Math.round(report.reduce((sum, s) => sum + s.score, 0) / report.length)
+    : 0;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -266,7 +326,7 @@ const PersonalizedIntelligence = () => {
 
             {/* Sections */}
             <div className="space-y-4">
-              {mockReport.map((section, i) => (
+              {report.map((section, i) => (
                 <motion.div
                   key={section.title}
                   initial={{ opacity: 0, x: 20 }}
@@ -312,7 +372,7 @@ const PersonalizedIntelligence = () => {
             </div>
 
             {/* Regenerate */}
-            {revealedSections >= mockReport.length && (
+            {revealedSections >= report.length && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
