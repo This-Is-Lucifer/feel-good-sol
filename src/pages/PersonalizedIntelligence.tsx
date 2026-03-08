@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, RefreshCw, ClipboardList } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
 interface CheckinAnswer {
@@ -154,13 +155,103 @@ const PersonalizedIntelligence = () => {
     }
   }, []);
 
-  const generateReport = () => {
+  const generateReport = async () => {
     setGenerating(true);
     setShowReport(false);
     setRevealedSections(0);
 
-    setTimeout(() => {
-      const generated = generateDynamicReport(checkinData);
+    // Build prompt from check-in data
+    const answersText = checkinData.length > 0
+      ? checkinData.map((a) => `Q: ${a.question}\nA: ${a.answer}`).join("\n\n")
+      : "No check-in data available.";
+
+    const systemPrompt = `You are MindFlow, an AI emotional intelligence analyst for crypto traders. Based on the user's emotional check-in responses, generate a personalized trading psychology report. 
+
+Return your response as valid JSON with this exact structure (no markdown, no code fences, just raw JSON):
+{
+  "sections": [
+    {
+      "title": "Emotional Stability",
+      "score": <number 0-100>,
+      "insight": "<personalized insight based on their answers>",
+      "recommendation": "<actionable recommendation>"
+    },
+    {
+      "title": "FOMO Resistance",
+      "score": <number 0-100>,
+      "insight": "<insight>",
+      "recommendation": "<recommendation>"
+    },
+    {
+      "title": "Risk Tolerance Alignment",
+      "score": <number 0-100>,
+      "insight": "<insight>",
+      "recommendation": "<recommendation>"
+    },
+    {
+      "title": "Decision Quality",
+      "score": <number 0-100>,
+      "insight": "<insight>",
+      "recommendation": "<recommendation>"
+    },
+    {
+      "title": "Stress Recovery",
+      "score": <number 0-100>,
+      "insight": "<insight>",
+      "recommendation": "<recommendation>"
+    }
+  ]
+}`;
+
+    const userPrompt = `Here are the user's emotional check-in responses:\n\n${answersText}\n\nGenerate their personalized trading mind report as JSON.`;
+
+    try {
+      const response = await fetch("https://e975-119-42-59-192.ngrok-free.app/api/ollama", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system: systemPrompt,
+          prompt: userPrompt,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      // Extract the AI response text — adjust based on actual response shape
+      const aiText = typeof data === "string" ? data : data.response || data.message?.content || JSON.stringify(data);
+
+      // Parse JSON from the response (handle possible markdown fences)
+      const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("Could not parse JSON from AI response");
+
+      const parsed = JSON.parse(jsonMatch[0]);
+      const iconMap: Record<string, typeof Brain> = {
+        "Emotional Stability": Heart,
+        "FOMO Resistance": Shield,
+        "Risk Tolerance Alignment": AlertTriangle,
+        "Decision Quality": TrendingUp,
+        "Stress Recovery": Zap,
+      };
+      const colorMap: Record<string, string> = {
+        "Emotional Stability": "text-primary",
+        "FOMO Resistance": "text-emerald-400",
+        "Risk Tolerance Alignment": "text-yellow-400",
+        "Decision Quality": "text-blue-400",
+        "Stress Recovery": "text-purple-400",
+      };
+
+      const generated: ReportSection[] = parsed.sections.map((s: any) => ({
+        title: s.title,
+        icon: iconMap[s.title] || Brain,
+        color: colorMap[s.title] || "text-primary",
+        score: Math.max(0, Math.min(100, Math.round(s.score))),
+        insight: s.insight,
+        recommendation: s.recommendation,
+      }));
+
       setReport(generated);
       setGenerating(false);
       setShowReport(true);
@@ -168,7 +259,23 @@ const PersonalizedIntelligence = () => {
       generated.forEach((_, i) => {
         setTimeout(() => setRevealedSections(i + 1), 400 * (i + 1));
       });
-    }, 2500);
+    } catch (err) {
+      console.error("Report generation failed:", err);
+      // Fallback to local generation
+      const generated = generateDynamicReport(checkinData);
+      setReport(generated);
+      setGenerating(false);
+      setShowReport(true);
+      toast({
+        title: "AI endpoint unavailable",
+        description: "Used local analysis instead. Make sure the Ollama endpoint is running.",
+        variant: "destructive",
+      });
+
+      generated.forEach((_, i) => {
+        setTimeout(() => setRevealedSections(i + 1), 400 * (i + 1));
+      });
+    }
   };
 
   const overallScore = report.length > 0
