@@ -160,7 +160,7 @@ const Index = () => {
         >
           {[
             { icon: Users, value: "50+", label: "Active Traders" },
-            { icon: MessageCircle, value: "89,000+", label: "AI Sessions" },
+            { icon: MessageCircle, value: "600+", label: "AI Sessions" },
             { icon: TrendingUp, value: "34%", label: "Avg. Stress Reduction" },
             { icon: Globe, value: "7+", label: "Countries" },
           ].map((stat) => (
