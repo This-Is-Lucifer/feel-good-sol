@@ -19,6 +19,28 @@ const WalletConnect = () => {
 
   const getProvider = () => (window as any)?.phantom?.solana;
 
+  const fetchBalance = async (addr: string) => {
+    try {
+      const res = await fetch("https://api.mainnet-beta.solana.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "getBalance",
+          params: [addr],
+        }),
+      });
+      const data = await res.json();
+      if (data?.result?.value !== undefined) {
+        setBalance(data.result.value / 1e9);
+      }
+    } catch (err) {
+      console.error("Failed to fetch balance:", err);
+      setBalance(null);
+    }
+  };
+
   const connectPhantom = async () => {
     setShowMenu(false);
 
@@ -45,6 +67,7 @@ const WalletConnect = () => {
       const addr = resp.publicKey.toString();
       setAddress(addr);
       setConnected(true);
+      fetchBalance(addr);
       toast({ title: "Phantom connected", description: addr.slice(0, 8) + "..." });
     } catch (err: any) {
       console.error("Phantom connect error:", err);
@@ -54,6 +77,7 @@ const WalletConnect = () => {
           const addr = signInResp.address.toString();
           setAddress(addr);
           setConnected(true);
+          fetchBalance(addr);
           toast({ title: "Phantom connected", description: addr.slice(0, 8) + "..." });
           return;
         }
@@ -82,12 +106,12 @@ const WalletConnect = () => {
     if (!provider?.isPhantom) return;
 
     try {
-      // Disconnect current wallet first, then reconnect — Phantom will show account picker
       await provider.disconnect();
       const resp = await provider.connect({ onlyIfTrusted: false });
       const addr = resp.publicKey.toString();
       setAddress(addr);
       setConnected(true);
+      fetchBalance(addr);
       toast({ title: "Wallet switched", description: addr.slice(0, 8) + "..." });
     } catch (err: any) {
       console.error("Switch wallet error:", err);
@@ -96,28 +120,6 @@ const WalletConnect = () => {
         description: err?.message || "Could not switch wallet.",
         variant: "destructive",
       });
-    }
-  };
-
-  const fetchBalance = async (addr: string) => {
-    try {
-      const res = await fetch("https://api.mainnet-beta.solana.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          method: "getBalance",
-          params: [addr],
-        }),
-      });
-      const data = await res.json();
-      if (data?.result?.value !== undefined) {
-        setBalance(data.result.value / 1e9); // lamports to SOL
-      }
-    } catch (err) {
-      console.error("Failed to fetch balance:", err);
-      setBalance(null);
     }
   };
 
@@ -144,11 +146,12 @@ const WalletConnect = () => {
       if (publicKey) {
         const addr = publicKey.toString();
         setAddress(addr);
+        fetchBalance(addr);
         toast({ title: "Account changed", description: addr.slice(0, 8) + "..." });
       } else {
-        // User disconnected from Phantom side
         setConnected(false);
         setAddress("");
+        setBalance(null);
       }
     };
 
@@ -159,6 +162,7 @@ const WalletConnect = () => {
   }, []);
 
   const truncated = address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "";
+  const balanceDisplay = balance !== null ? `${balance.toFixed(4)} SOL` : "";
 
   return (
     <div className="relative">
@@ -173,7 +177,19 @@ const WalletConnect = () => {
         }`}
       >
         <Wallet className="w-4 h-4" />
-        {connected ? truncated : "Connect Wallet"}
+        {connected ? (
+          <span className="flex items-center gap-1.5">
+            <span>{truncated}</span>
+            {balanceDisplay && (
+              <>
+                <span className="text-muted-foreground">·</span>
+                <span className="text-xs text-muted-foreground">{balanceDisplay}</span>
+              </>
+            )}
+          </span>
+        ) : (
+          "Connect Wallet"
+        )}
         {connected && <ChevronDown className="w-3 h-3" />}
       </motion.button>
 
