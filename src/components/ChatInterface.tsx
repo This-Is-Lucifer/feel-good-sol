@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
