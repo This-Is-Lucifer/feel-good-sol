@@ -165,53 +165,13 @@ const PersonalizedIntelligence = () => {
       ? checkinData.map((a) => `Q: ${a.question}\nA: ${a.answer}`).join("\n\n")
       : "No check-in data available.";
 
-    const systemPrompt = `You are MindFlow, an AI emotional intelligence analyst for crypto traders. Based on the user's emotional check-in responses, generate a personalized trading psychology report. 
-
-Return your response as valid JSON with this exact structure (no markdown, no code fences, just raw JSON):
-{
-  "sections": [
-    {
-      "title": "Emotional Stability",
-      "score": <number 0-100>,
-      "insight": "<personalized insight based on their answers>",
-      "recommendation": "<actionable recommendation>"
-    },
-    {
-      "title": "FOMO Resistance",
-      "score": <number 0-100>,
-      "insight": "<insight>",
-      "recommendation": "<recommendation>"
-    },
-    {
-      "title": "Risk Tolerance Alignment",
-      "score": <number 0-100>,
-      "insight": "<insight>",
-      "recommendation": "<recommendation>"
-    },
-    {
-      "title": "Decision Quality",
-      "score": <number 0-100>,
-      "insight": "<insight>",
-      "recommendation": "<recommendation>"
-    },
-    {
-      "title": "Stress Recovery",
-      "score": <number 0-100>,
-      "insight": "<insight>",
-      "recommendation": "<recommendation>"
-    }
-  ]
-}`;
-
-    const userPrompt = `Here are the user's emotional check-in responses:\n\n${answersText}\n\nGenerate their personalized trading mind report as JSON.`;
-
     try {
       const response = await fetch("https://e975-119-42-59-192.ngrok-free.app/api/ollama", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system: systemPrompt,
-          prompt: userPrompt,
+          system: "You are MindFlow, an AI emotional intelligence analyst for crypto traders. Analyze the user's emotional check-in responses and provide a personalized trading psychology assessment. Be empathetic, specific, and actionable.",
+          prompt: `Here are the user's emotional check-in responses:\n\n${answersText}\n\nProvide a personalized emotional intelligence assessment for this trader.`,
         }),
       });
 
@@ -220,48 +180,27 @@ Return your response as valid JSON with this exact structure (no markdown, no co
       }
 
       const data = await response.json();
-      // Extract the AI response text — adjust based on actual response shape
+      console.log("Ollama response:", data);
+
+      // Extract AI text from response
       const aiText = typeof data === "string" ? data : data.response || data.message?.content || JSON.stringify(data);
 
-      // Parse JSON from the response (handle possible markdown fences)
-      const jsonMatch = aiText.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("Could not parse JSON from AI response");
+      // Use AI response as the insight for a single overview section, plus local scores
+      const localReport = generateDynamicReport(checkinData);
+      // Replace the first section's insight with the AI response
+      if (localReport.length > 0) {
+        localReport[0].insight = aiText;
+      }
 
-      const parsed = JSON.parse(jsonMatch[0]);
-      const iconMap: Record<string, typeof Brain> = {
-        "Emotional Stability": Heart,
-        "FOMO Resistance": Shield,
-        "Risk Tolerance Alignment": AlertTriangle,
-        "Decision Quality": TrendingUp,
-        "Stress Recovery": Zap,
-      };
-      const colorMap: Record<string, string> = {
-        "Emotional Stability": "text-primary",
-        "FOMO Resistance": "text-emerald-400",
-        "Risk Tolerance Alignment": "text-yellow-400",
-        "Decision Quality": "text-blue-400",
-        "Stress Recovery": "text-purple-400",
-      };
-
-      const generated: ReportSection[] = parsed.sections.map((s: any) => ({
-        title: s.title,
-        icon: iconMap[s.title] || Brain,
-        color: colorMap[s.title] || "text-primary",
-        score: Math.max(0, Math.min(100, Math.round(s.score))),
-        insight: s.insight,
-        recommendation: s.recommendation,
-      }));
-
-      setReport(generated);
+      setReport(localReport);
       setGenerating(false);
       setShowReport(true);
 
-      generated.forEach((_, i) => {
+      localReport.forEach((_, i) => {
         setTimeout(() => setRevealedSections(i + 1), 400 * (i + 1));
       });
     } catch (err) {
       console.error("Report generation failed:", err);
-      // Fallback to local generation
       const generated = generateDynamicReport(checkinData);
       setReport(generated);
       setGenerating(false);
