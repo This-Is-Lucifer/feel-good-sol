@@ -4,6 +4,7 @@ import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, Refres
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import html2pdf from "html2pdf.js";
+import ReactMarkdown from "react-markdown";
 
 interface CheckinAnswer {
   question: string;
