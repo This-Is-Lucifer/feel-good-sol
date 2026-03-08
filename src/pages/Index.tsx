@@ -250,7 +250,6 @@ const Index = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               {[
-                { icon: Zap, label: "Weekly Live Sessions" },
                 { icon: Shield, label: "Anonymous & Encrypted" },
                 { icon: MessageCircle, label: "24/7 AI Support" },
               ].map((item) => (
