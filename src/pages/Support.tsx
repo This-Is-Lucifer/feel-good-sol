@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, Copy, Check, ArrowLeft, Wallet } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
