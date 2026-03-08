@@ -170,7 +170,7 @@ const PersonalizedIntelligence = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system: "You are MindFlow, an AI emotional intelligence analyst for crypto traders. Analyze the user's emotional check-in responses and provide a personalized trading psychology assessment. Be empathetic, specific, and actionable.",
+          system: "You are MindFlow, an AI emotional intelligence analyst for crypto traders. Analyze the user's emotional check-in responses and provide a personalized trading psychology assessment. Be empathetic, specific, and actionable. Format your response in clean, well-structured Markdown. Use headings (##), bullet points, bold text for key insights, and blockquotes for recommendations. Include emojis sparingly to make it engaging. Structure the report with clear sections: Emotional Overview, FOMO & Impulse Analysis, Risk Behavior, Decision Quality, and Actionable Recommendations.",
           prompt: `Here are the user's emotional check-in responses:\n\n${answersText}\n\nProvide a personalized emotional intelligence assessment for this trader.`,
         }),
       });
