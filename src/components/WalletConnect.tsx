@@ -31,30 +31,45 @@ const WalletConnect = () => {
       return;
     }
 
-    const phantom = (window as any)?.phantom?.solana || (window as any)?.solana;
+    const provider = (window as any)?.phantom?.solana;
 
-    console.log("Phantom provider:", phantom);
-    console.log("isPhantom:", phantom?.isPhantom);
-
-    if (phantom?.isPhantom) {
-      try {
-        const resp = await phantom.connect({ onlyIfTrusted: false });
-        const addr = resp.publicKey.toString();
-        setAddress(addr);
-        setConnected(true);
-        setWalletType("phantom");
-        toast({ title: "Phantom connected", description: addr.slice(0, 8) + "..." });
-      } catch (err: any) {
-        console.error("Phantom connect error:", err);
-        toast({
-          title: "Connection failed",
-          description: err?.message || "Phantom connection was rejected or timed out.",
-          variant: "destructive",
-        });
-      }
-    } else {
+    if (!provider?.isPhantom) {
       toast({ title: "Phantom not found", description: "Redirecting to install Phantom..." });
       window.open("https://phantom.app/", "_blank");
+      return;
+    }
+
+    try {
+      // Disconnect first to clear any stale state
+      try { await provider.disconnect(); } catch {}
+      
+      const resp = await provider.connect();
+      const addr = resp.publicKey.toString();
+      setAddress(addr);
+      setConnected(true);
+      setWalletType("phantom");
+      toast({ title: "Phantom connected", description: addr.slice(0, 8) + "..." });
+    } catch (err: any) {
+      console.error("Phantom connect error:", err);
+      
+      // Fallback: try signIn method if connect fails
+      try {
+        const signInResp = await provider.signIn?.();
+        if (signInResp?.address) {
+          const addr = signInResp.address.toString();
+          setAddress(addr);
+          setConnected(true);
+          setWalletType("phantom");
+          toast({ title: "Phantom connected", description: addr.slice(0, 8) + "..." });
+          return;
+        }
+      } catch {}
+
+      toast({
+        title: "Connection failed",
+        description: "Please make sure Phantom is unlocked and try again.",
+        variant: "destructive",
+      });
     }
   };
 
