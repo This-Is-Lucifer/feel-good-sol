@@ -99,12 +99,35 @@ const WalletConnect = () => {
     }
   };
 
+  const fetchBalance = async (addr: string) => {
+    try {
+      const res = await fetch("https://api.mainnet-beta.solana.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "getBalance",
+          params: [addr],
+        }),
+      });
+      const data = await res.json();
+      if (data?.result?.value !== undefined) {
+        setBalance(data.result.value / 1e9); // lamports to SOL
+      }
+    } catch (err) {
+      console.error("Failed to fetch balance:", err);
+      setBalance(null);
+    }
+  };
+
   const handleDisconnect = async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     setShowMenu(false);
     setConnected(false);
     setAddress("");
+    setBalance(null);
     try {
       const provider = getProvider();
       if (provider) await provider.disconnect();
