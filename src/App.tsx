@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Features from "./pages/Features";
 import EmotionalAI from "./pages/EmotionalAI";
 import PersonalizedIntelligence from "./pages/PersonalizedIntelligence";
+import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
