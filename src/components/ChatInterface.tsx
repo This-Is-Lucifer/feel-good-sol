@@ -14,7 +14,7 @@ const INITIAL_MESSAGE: Message = {
   content: "Hey there 👋 I'm MindFlow — your crypto wellness companion. How are you feeling about the markets today?",
 };
 
-const SYSTEM_MESSAGE = "Hey there 👋 I'm MindFlow — your crypto wellness companion. You are an empathetic AI that helps crypto traders manage their emotional well-being. Be supportive, understanding, and provide actionable advice for managing stress, anxiety, and emotional decision-making in crypto trading. Keep responses concise and conversational.";
+const SYSTEM_MESSAGE = "Hi! 👋 I'm MindFlow and my job is to help traders manage stress, anxiety, and emotions with supportive, practical, and concise advice.";
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
