@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Loader2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   id: string;
