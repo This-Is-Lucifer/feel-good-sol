@@ -10,6 +10,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Marquee Banner */}
+      <div className="relative z-20 bg-primary/10 border-b border-primary/20 overflow-hidden py-1.5">
+        <div className="animate-[marquee_20s_linear_infinite] whitespace-nowrap flex gap-12">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <span key={i} className="inline-flex items-center gap-2 text-xs font-display text-primary tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+              Only Compatible with Desktop Screens
+            </span>
+          ))}
+        </div>
+      </div>
       {/* Background ambient effects */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
