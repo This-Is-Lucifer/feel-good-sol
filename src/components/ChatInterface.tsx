@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Loader2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   id: string;
@@ -106,7 +107,11 @@ const ChatInterface = () => {
                     : "bg-secondary text-secondary-foreground rounded-bl-md"
                 }`}
               >
-                {msg.content}
+                {msg.role === "user" ? msg.content : (
+                  <div className="prose prose-sm prose-invert max-w-none">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
