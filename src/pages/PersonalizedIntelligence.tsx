@@ -429,7 +429,9 @@ const PersonalizedIntelligence = () => {
                     <p className="text-xs uppercase tracking-widest font-display text-primary font-semibold mb-1">
                       Recommendation
                     </p>
-                    <p className="text-sm text-foreground leading-relaxed">{section.recommendation}</p>
+                    <div className="text-sm text-foreground leading-relaxed prose prose-sm prose-invert max-w-none prose-p:text-foreground prose-strong:text-primary prose-li:text-foreground">
+                      <ReactMarkdown>{section.recommendation}</ReactMarkdown>
+                    </div>
                   </div>
                 </motion.div>
               ))}
