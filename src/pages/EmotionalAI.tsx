@@ -115,7 +115,14 @@ const EmotionalAI = () => {
 
   const next = () => {
     if (currentQ < questions.length - 1) setCurrentQ((p) => p + 1);
-    else setCompleted(true);
+    else {
+      setCompleted(true);
+      // Save answers with question text for the Intelligence page
+      const savedData = questions
+        .filter((q) => q.type !== "camera")
+        .map((q) => ({ question: q.text, answer: answers[q.id] ?? "—", category: q.category }));
+      localStorage.setItem("mindflow_checkin", JSON.stringify(savedData));
+    }
   };
 
   const prev = () => {

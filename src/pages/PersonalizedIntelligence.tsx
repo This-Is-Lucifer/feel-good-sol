@@ -148,6 +148,55 @@ const PersonalizedIntelligence = () => {
           </p>
         </motion.div>
 
+        {/* Check-in Responses */}
+        {checkinData.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8 p-5 md:p-6 rounded-2xl border border-border bg-card/40 backdrop-blur-sm"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <ClipboardList className="w-4 h-4 text-primary" />
+              <h2 className="font-display font-semibold text-sm text-foreground">Your Check-in Responses</h2>
+            </div>
+            <div className="space-y-3">
+              {checkinData.map((item, i) => (
+                <div key={i} className="flex flex-col gap-1">
+                  <p className="text-xs text-muted-foreground">{item.question}</p>
+                  <p className="text-sm text-foreground font-medium">
+                    {item.answer !== "—" ? String(item.answer) : <span className="text-muted-foreground italic">Skipped</span>}
+                  </p>
+                  {i < checkinData.length - 1 && <div className="border-b border-border/50 mt-2" />}
+                </div>
+              ))}
+            </div>
+            <Link
+              to="/emotional-ai"
+              className="inline-flex items-center gap-1 mt-4 text-xs text-primary hover:text-primary/80 font-display font-medium transition-colors"
+            >
+              Retake Check-in →
+            </Link>
+          </motion.div>
+        )}
+
+        {checkinData.length === 0 && !generating && !showReport && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mb-8 p-5 rounded-2xl border border-dashed border-border bg-card/20 text-center"
+          >
+            <p className="text-sm text-muted-foreground mb-3">No check-in data found. Complete an emotional check-in first for personalized insights.</p>
+            <Link
+              to="/emotional-ai"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-display font-medium hover:bg-primary/90 transition-colors"
+            >
+              <Brain className="w-3.5 h-3.5" />
+              Start Check-in
+            </Link>
+          </motion.div>
+        )}
+
         {/* Generate button */}
         {!showReport && !generating && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center mb-12">
