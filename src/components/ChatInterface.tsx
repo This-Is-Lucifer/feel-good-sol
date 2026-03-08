@@ -41,19 +41,14 @@ const ChatInterface = () => {
     setInput("");
     setIsTyping(true);
 
-    // Build conversation history for context
-    const allMessages = [...messages, userMsg];
-    const conversationHistory = allMessages
-      .map((m) => `${m.role === "user" ? "User" : "MindFlow"}: ${m.content}`)
-      .join("\n");
-
+    // Send only the last user message
     try {
       const response = await fetch("https://e975-119-42-59-192.ngrok-free.app/api/ollama", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           system: SYSTEM_MESSAGE,
-          prompt: `Here is the conversation so far:\n\n${conversationHistory}\n\nRespond to the user's latest message as MindFlow. Do not repeat the conversation history, just reply naturally. You need to always respond as a human, do not reply as a robot. For all the user queries, try to help him with calm responses.`,
+          prompt: userMessage,
         }),
       });
 
