@@ -142,7 +142,7 @@ const questionPool: Question[] = [
 // Camera question is always included as the last question
 const cameraQuestion: Question = {
   id: 999,
-  text: "Let's read your face — capture a selfie for mock emotion analysis.",
+  text: "Let's read your face — take a selfie for AI-powered emotion analysis.",
   type: "camera",
   category: "mood",
 };
