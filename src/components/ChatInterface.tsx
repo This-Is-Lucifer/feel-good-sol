@@ -14,12 +14,7 @@ const INITIAL_MESSAGE: Message = {
   content: "Hey there 👋 I'm MindFlow — your crypto wellness companion. How are you feeling about the markets today?",
 };
 
-const MOCK_RESPONSES = [
-  "I understand that market volatility can be really stressful. Let's take a moment to separate your financial decisions from your emotional state. What's specifically weighing on you?",
-  "That's completely valid. Many crypto traders experience similar feelings. Have you tried the 5-4-3-2-1 grounding technique? Let me walk you through it.",
-  "Your awareness of how the market affects your mood is actually a great first step. Let's work on building some resilience strategies together.",
-  "Remember — your portfolio doesn't define your worth. Let's focus on what you can control right now. Would you like a quick breathing exercise?",
-];
+const SYSTEM_MESSAGE = "Hey there 👋 I'm MindFlow — your crypto wellness companion. You are an empathetic AI that helps crypto traders manage their emotional well-being. Be supportive, understanding, and provide actionable advice for managing stress, anxiety, and emotional decision-making in crypto trading. Keep responses concise and conversational.";
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
@@ -36,25 +31,48 @@ const ChatInterface = () => {
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
 
+    const userMessage = input.trim();
     const userMsg: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input.trim(),
+      content: userMessage,
     };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const response: Message = {
+    try {
+      const response = await fetch("https://e975-119-42-59-192.ngrok-free.app/api/ollama", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system: SYSTEM_MESSAGE,
+          prompt: userMessage,
+        }),
+      });
+
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+      const data = await response.json();
+      const aiText = typeof data === "string" ? data : data.response || data.message?.content || "I'm here for you. Could you tell me more?";
+
+      const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)],
+        content: aiText,
       };
-      setMessages((prev) => [...prev, response]);
+      setMessages((prev) => [...prev, aiMsg]);
+    } catch (err) {
+      console.error("Chat AI error:", err);
+      const aiMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "I'm having trouble connecting right now. Please try again in a moment. 🙏",
+      };
+      setMessages((prev) => [...prev, aiMsg]);
+    } finally {
       setIsTyping(false);
-    }, 1500 + Math.random() * 1000);
+    }
   };
 
   return (
