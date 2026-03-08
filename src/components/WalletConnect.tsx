@@ -6,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 const WalletConnect = () => {
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState("");
+  const [balance, setBalance] = useState<number | null>(null);
   const [showMenu, setShowMenu] = useState(false);
 
   const isInIframe = () => {
