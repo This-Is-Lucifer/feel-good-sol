@@ -78,15 +78,21 @@ const EmotionalAI = () => {
 
   const q = questions[currentQ];
 
+  const [cameraError, setCameraError] = useState(false);
+
   const startCamera = useCallback(async () => {
+    setCameraError(false);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play();
+        };
         setCameraActive(true);
       }
     } catch {
-      // Camera not available
+      setCameraError(true);
     }
   }, []);
 
@@ -244,14 +250,46 @@ const EmotionalAI = () => {
               {/* Camera */}
               {q.type === "camera" && (
                 <div className="flex flex-col items-center gap-4">
-                  {!capturedImage && !cameraActive && (
-                    <button
-                      onClick={startCamera}
-                      className="flex items-center gap-2 px-6 py-3 rounded-xl border border-primary/30 bg-primary/10 text-primary text-sm font-display font-medium hover:bg-primary/15 transition-colors"
-                    >
-                      <Camera className="w-4 h-4" />
-                      Open Camera
-                    </button>
+                  {!capturedImage && !cameraActive && !cameraError && (
+                    <div className="flex flex-col items-center gap-3">
+                      <button
+                        onClick={startCamera}
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl border border-primary/30 bg-primary/10 text-primary text-sm font-display font-medium hover:bg-primary/15 transition-colors"
+                      >
+                        <Camera className="w-4 h-4" />
+                        Open Camera
+                      </button>
+                      <button
+                        onClick={next}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+                      >
+                        Skip this step
+                      </button>
+                    </div>
+                  )}
+
+                  {cameraError && (
+                    <div className="w-full max-w-sm p-6 rounded-xl border border-destructive/30 bg-destructive/5 text-center space-y-3">
+                      <AlertTriangle className="w-8 h-8 text-destructive mx-auto" />
+                      <p className="text-sm text-foreground font-display font-medium">Camera not available</p>
+                      <p className="text-xs text-muted-foreground">
+                        Camera access was denied or is not supported in this browser. You can skip this step.
+                      </p>
+                      <div className="flex gap-2 justify-center pt-1">
+                        <button
+                          onClick={startCamera}
+                          className="px-4 py-2 rounded-lg border border-border bg-secondary/50 text-sm text-foreground hover:bg-secondary transition-colors"
+                        >
+                          Try Again
+                        </button>
+                        <button
+                          onClick={next}
+                          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+                        >
+                          Skip
+                        </button>
+                      </div>
+                    </div>
                   )}
 
                   {cameraActive && (
