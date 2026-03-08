@@ -173,15 +173,15 @@ const WalletConnect = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <TooltipProvider delayDuration={200}>
-        <Tooltip>
+        <Tooltip open={showMenu ? false : undefined}>
           <TooltipTrigger asChild>
             <motion.button
               onClick={connected ? () => setShowMenu(!showMenu) : connectPhantom}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-display text-sm font-medium transition-all border ${
+              className={`relative z-50 flex items-center gap-2 px-5 py-2.5 rounded-xl font-display text-sm font-medium transition-all border ${
                 connected
                   ? "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 shadow-[0_0_12px_hsl(var(--primary)/0.15)]"
                   : "border-border bg-secondary hover:bg-secondary/80 text-foreground"
@@ -200,7 +200,7 @@ const WalletConnect = () => {
               {connected && <ChevronDown className={`w-3 h-3 transition-transform ${showMenu ? "rotate-180" : ""}`} />}
             </motion.button>
           </TooltipTrigger>
-          {connected && (
+          {connected && !showMenu && (
             <TooltipContent side="bottom" className="font-mono text-xs max-w-[320px] break-all flex items-center gap-2">
               <span>{address}</span>
               <button onClick={copyAddress} className="shrink-0 hover:text-primary transition-colors">
@@ -213,15 +213,15 @@ const WalletConnect = () => {
 
       {showMenu && connected && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+          <div className="fixed inset-0 z-[60]" onClick={() => setShowMenu(false)} />
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute right-0 top-full mt-2 z-50 w-52 rounded-xl border border-border bg-card shadow-lg overflow-hidden"
+            className="absolute right-0 top-full mt-2 z-[70] w-52 rounded-xl border border-border bg-card shadow-lg overflow-hidden"
           >
             <button
               onClick={switchWallet}
-              className="group flex items-center gap-3 w-full px-4 py-3 text-sm font-display text-foreground hover:bg-primary/10 hover:text-primary active:bg-primary/20 transition-all cursor-pointer"
+              className="flex items-center gap-3 w-full px-4 py-3 text-sm font-display text-foreground hover:bg-primary/10 hover:text-primary active:bg-primary/20 transition-all cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" />
               Switch Wallet
@@ -229,7 +229,7 @@ const WalletConnect = () => {
             <div className="border-t border-border" />
             <button
               onClick={handleDisconnect}
-              className="group flex items-center gap-3 w-full px-4 py-3 text-sm font-display text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-all cursor-pointer"
+              className="flex items-center gap-3 w-full px-4 py-3 text-sm font-display text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-all cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
               Disconnect
