@@ -166,34 +166,54 @@ const WalletConnect = () => {
   const truncated = address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "";
   const balanceDisplay = balance !== null ? `${balance.toFixed(4)} SOL` : "";
 
+  const copyAddress = () => {
+    navigator.clipboard.writeText(address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
   return (
     <div className="relative">
-      <motion.button
-        onClick={connected ? () => setShowMenu(!showMenu) : connectPhantom}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-display text-sm font-medium transition-colors border ${
-          connected
-            ? "border-primary/30 bg-primary/10 text-primary hover:bg-primary/15"
-            : "border-border bg-secondary hover:bg-secondary/80 text-foreground"
-        }`}
-      >
-        <Wallet className="w-4 h-4" />
-        {connected ? (
-          <span className="flex items-center gap-1.5">
-            <span>{truncated}</span>
-            {balanceDisplay && (
-              <>
-                <span className="text-muted-foreground">·</span>
-                <span className="text-xs text-muted-foreground">{balanceDisplay}</span>
-              </>
-            )}
-          </span>
-        ) : (
-          "Connect Wallet"
-        )}
-        {connected && <ChevronDown className="w-3 h-3" />}
-      </motion.button>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <motion.button
+              onClick={connected ? () => setShowMenu(!showMenu) : connectPhantom}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-display text-sm font-medium transition-all border ${
+                connected
+                  ? "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 shadow-[0_0_12px_hsl(var(--primary)/0.15)]"
+                  : "border-border bg-secondary hover:bg-secondary/80 text-foreground"
+              }`}
+            >
+              <Wallet className="w-4 h-4" />
+              {connected ? (
+                <span className="flex items-center gap-2">
+                  <span className="font-mono tracking-wide">{truncated}</span>
+                  {balanceDisplay && (
+                    <>
+                      <span className="w-1 h-1 rounded-full bg-primary/50" />
+                      <span className="text-xs text-primary/70">{balanceDisplay}</span>
+                    </>
+                  )}
+                </span>
+              ) : (
+                "Connect Wallet"
+              )}
+              {connected && <ChevronDown className={`w-3 h-3 transition-transform ${showMenu ? "rotate-180" : ""}`} />}
+            </motion.button>
+          </TooltipTrigger>
+          {connected && (
+            <TooltipContent side="bottom" className="font-mono text-xs max-w-[320px] break-all flex items-center gap-2">
+              <span>{address}</span>
+              <button onClick={copyAddress} className="shrink-0 hover:text-primary transition-colors">
+                {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+              </button>
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
 
       {showMenu && connected && (
         <>
