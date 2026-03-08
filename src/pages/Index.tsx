@@ -12,13 +12,12 @@ const Index = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Marquee Banner */}
       <div className="relative z-20 bg-primary/10 border-b border-primary/20 overflow-hidden py-1.5">
-        <div className="flex whitespace-nowrap animate-[marquee_18s_linear_infinite]">
-          <span className="text-xs font-display text-primary tracking-wide px-[50vw]">
-            ⚠️ Only Compatible with Desktop Screens
-          </span>
-          <span className="text-xs font-display text-primary tracking-wide px-[50vw]">
-            ⚠️ Only Compatible with Desktop Screens
-          </span>
+        <div className="flex w-max animate-[marquee_20s_linear_infinite]">
+          {[0, 1].map((i) => (
+            <span key={i} className="text-xs font-display text-primary tracking-wide mx-[50vw] shrink-0">
+              ⚠️ Only Compatible with Desktop Screens
+            </span>
+          ))}
         </div>
       </div>
       {/* Background ambient effects */}
