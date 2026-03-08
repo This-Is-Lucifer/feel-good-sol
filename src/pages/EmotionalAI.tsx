@@ -440,10 +440,10 @@ const EmotionalAI = () => {
                       />
                       <button
                         onClick={capturePhoto}
-                        className="mt-3 w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-display font-medium hover:bg-primary/90 transition-colors"
+                        className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-display font-medium hover:bg-primary/90 transition-colors shadow-lg"
                       >
                         <Camera className="w-4 h-4" />
-                        Capture Photo
+                        Capture
                       </button>
                     </div>
                   )}
