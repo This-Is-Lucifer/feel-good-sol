@@ -162,7 +162,7 @@ const Index = () => {
             { icon: Users, value: "12,400+", label: "Active Traders" },
             { icon: MessageCircle, value: "89,000+", label: "AI Sessions" },
             { icon: TrendingUp, value: "34%", label: "Avg. Stress Reduction" },
-            { icon: Globe, value: "62", label: "Countries" },
+            { icon: Globe, value: "7+", label: "Countries" },
           ].map((stat) => (
             <motion.div
               key={stat.label}
