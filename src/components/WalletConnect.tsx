@@ -1,15 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Wallet } from "lucide-react";
+import { Wallet, ChevronDown, RefreshCw, LogOut } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-
-type WalletType = "phantom" | "metamask" | null;
 
 const WalletConnect = () => {
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState("");
-  const [walletType, setWalletType] = useState<WalletType>(null);
-  
+  const [showMenu, setShowMenu] = useState(false);
 
   const isInIframe = () => {
     try {
@@ -19,8 +16,10 @@ const WalletConnect = () => {
     }
   };
 
-  const connectPhantom = async () => {
+  const getProvider = () => (window as any)?.phantom?.solana;
 
+  const connectPhantom = async () => {
+    setShowMenu(false);
 
     if (isInIframe()) {
       toast({
@@ -31,7 +30,7 @@ const WalletConnect = () => {
       return;
     }
 
-    const provider = (window as any)?.phantom?.solana;
+    const provider = getProvider();
 
     if (!provider?.isPhantom) {
       toast({ title: "Phantom not found", description: "Redirecting to install Phantom..." });
@@ -40,31 +39,24 @@ const WalletConnect = () => {
     }
 
     try {
-      // Disconnect first to clear any stale state
       try { await provider.disconnect(); } catch {}
-      
       const resp = await provider.connect();
       const addr = resp.publicKey.toString();
       setAddress(addr);
       setConnected(true);
-      setWalletType("phantom");
       toast({ title: "Phantom connected", description: addr.slice(0, 8) + "..." });
     } catch (err: any) {
       console.error("Phantom connect error:", err);
-      
-      // Fallback: try signIn method if connect fails
       try {
         const signInResp = await provider.signIn?.();
         if (signInResp?.address) {
           const addr = signInResp.address.toString();
           setAddress(addr);
           setConnected(true);
-          setWalletType("phantom");
           toast({ title: "Phantom connected", description: addr.slice(0, 8) + "..." });
           return;
         }
       } catch {}
-
       toast({
         title: "Connection failed",
         description: "Please make sure Phantom is unlocked and try again.",
@@ -73,61 +65,78 @@ const WalletConnect = () => {
     }
   };
 
-  const connectMetaMask = async () => {
-    
+  const switchWallet = async () => {
+    setShowMenu(false);
 
     if (isInIframe()) {
       toast({
         title: "Open in a new tab",
-        description: "Wallet extensions can't be accessed inside the preview. Open the published URL directly.",
+        description: "Wallet extensions can't be accessed inside the preview.",
         variant: "destructive",
       });
       return;
     }
 
-    const ethereum = (window as any)?.ethereum;
+    const provider = getProvider();
+    if (!provider?.isPhantom) return;
 
-    console.log("Ethereum provider:", ethereum);
-    console.log("isMetaMask:", ethereum?.isMetaMask);
-
-    if (ethereum?.isMetaMask) {
-      try {
-        const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-        const addr = accounts[0];
-        setAddress(addr);
-        setConnected(true);
-        setWalletType("metamask");
-        toast({ title: "MetaMask connected", description: addr.slice(0, 8) + "..." });
-      } catch (err: any) {
-        console.error("MetaMask connect error:", err);
-        toast({
-          title: "Connection failed",
-          description: err?.message || "MetaMask connection was rejected.",
-          variant: "destructive",
-        });
-      }
-    } else {
-      toast({ title: "MetaMask not found", description: "Redirecting to install MetaMask..." });
-      window.open("https://metamask.io/download/", "_blank");
+    try {
+      // Disconnect current wallet first, then reconnect — Phantom will show account picker
+      await provider.disconnect();
+      const resp = await provider.connect({ onlyIfTrusted: false });
+      const addr = resp.publicKey.toString();
+      setAddress(addr);
+      setConnected(true);
+      toast({ title: "Wallet switched", description: addr.slice(0, 8) + "..." });
+    } catch (err: any) {
+      console.error("Switch wallet error:", err);
+      toast({
+        title: "Switch failed",
+        description: err?.message || "Could not switch wallet.",
+        variant: "destructive",
+      });
     }
   };
 
   const handleDisconnect = async () => {
-    if (walletType === "phantom") {
-      const phantom = (window as any)?.phantom?.solana || (window as any)?.solana;
-      if (phantom) await phantom.disconnect();
+    setShowMenu(false);
+    const provider = getProvider();
+    if (provider) {
+      try { await provider.disconnect(); } catch {}
     }
     setConnected(false);
     setAddress("");
-    setWalletType(null);
   };
+
+  // Listen for account changes in Phantom
+  useEffect(() => {
+    const provider = getProvider();
+    if (!provider) return;
+
+    const handleAccountChanged = (publicKey: any) => {
+      if (publicKey) {
+        const addr = publicKey.toString();
+        setAddress(addr);
+        toast({ title: "Account changed", description: addr.slice(0, 8) + "..." });
+      } else {
+        // User disconnected from Phantom side
+        setConnected(false);
+        setAddress("");
+      }
+    };
+
+    provider.on("accountChanged", handleAccountChanged);
+    return () => {
+      provider.removeListener?.("accountChanged", handleAccountChanged);
+    };
+  }, []);
 
   const truncated = address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "";
 
   return (
     <div className="relative">
       <motion.button
-        onClick={connected ? handleDisconnect : connectPhantom}
+        onClick={connected ? () => setShowMenu(!showMenu) : connectPhantom}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
         className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-display text-sm font-medium transition-colors border ${
@@ -138,7 +147,35 @@ const WalletConnect = () => {
       >
         <Wallet className="w-4 h-4" />
         {connected ? truncated : "Connect Wallet"}
+        {connected && <ChevronDown className="w-3 h-3" />}
       </motion.button>
+
+      {showMenu && connected && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute right-0 top-full mt-2 z-50 w-52 rounded-xl border border-border bg-card shadow-lg overflow-hidden"
+          >
+            <button
+              onClick={switchWallet}
+              className="group flex items-center gap-3 w-full px-4 py-3 text-sm font-display text-foreground hover:bg-primary/10 hover:text-primary active:bg-primary/20 transition-all cursor-pointer"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Switch Wallet
+            </button>
+            <div className="border-t border-border" />
+            <button
+              onClick={handleDisconnect}
+              className="group flex items-center gap-3 w-full px-4 py-3 text-sm font-display text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-all cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              Disconnect
+            </button>
+          </motion.div>
+        </>
+      )}
     </div>
   );
 };
