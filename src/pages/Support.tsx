@@ -47,7 +47,8 @@ const Support = () => {
 
       const { PublicKey, Transaction, SystemProgram, Connection } = await import("@solana/web3.js");
 
-      const connection = new Connection("https://solana-mainnet.g.alchemy.com/v2/demo", "confirmed");
+      // Use Phantom's own connection to avoid public RPC CORS/rate-limit issues
+      const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=15319bf4-47d5-4e17-8c27-45956b2767d3", "confirmed");
       const fromPubkey = provider.publicKey;
       const toPubkey = new PublicKey(RECIPIENT_WALLET);
       const lamports = Math.round(activeAmount * LAMPORTS_PER_SOL);
@@ -65,7 +66,6 @@ const Support = () => {
       transaction.feePayer = fromPubkey;
 
       const { signature } = await provider.signAndSendTransaction(transaction);
-      await connection.confirmTransaction(signature, "confirmed");
 
       toast.success(`Thank you! ${activeAmount} SOL sent successfully 🎉`);
       setSelectedAmount(null);
