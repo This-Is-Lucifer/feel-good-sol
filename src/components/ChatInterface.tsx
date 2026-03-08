@@ -14,7 +14,7 @@ const INITIAL_MESSAGE: Message = {
   content: "Hey there 👋 I'm MindFlow — your crypto wellness companion. How are you feeling about the markets today?",
 };
 
-const SYSTEM_MESSAGE = "Hi! 👋 I'm MindFlow and my job is to help traders manage stress, anxiety, and emotions with supportive, practical, and concise advice.";
+const SYSTEM_MESSAGE = "Hi! 👋 I'm MindFlow and my job is to help traders manage stress, anxiety, and emotions with supportive, practical, and concise advice. You need to understand the user query and then based on the conversation provide a relevant response.";
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
