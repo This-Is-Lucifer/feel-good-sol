@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Brain, Shield, BarChart3 } from "lucide-react";
+import { Brain, Shield, BarChart3, Users, MessageCircle, TrendingUp, Heart, Star, Globe, Zap } from "lucide-react";
 import AvatarOrb from "@/components/AvatarOrb";
 import ChatInterface from "@/components/ChatInterface";
 import WalletConnect from "@/components/WalletConnect";
@@ -123,6 +123,144 @@ const Index = () => {
           ))}
         </motion.div>
       </main>
+
+      {/* Community Section */}
+      <section id="community" className="relative z-10 px-6 md:px-12 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-display mb-6">
+            <Users className="w-3 h-3" />
+            Join the Movement
+          </div>
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">
+            A Community That <span className="text-primary">Feels Together</span>
+          </h2>
+          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto font-body">
+            Thousands of traders are choosing mental clarity over market chaos. Here's what they're saying.
+          </p>
+        </motion.div>
+
+        {/* Community Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-16"
+        >
+          {[
+            { icon: Users, value: "12,400+", label: "Active Traders" },
+            { icon: MessageCircle, value: "89,000+", label: "AI Sessions" },
+            { icon: TrendingUp, value: "34%", label: "Avg. Stress Reduction" },
+            { icon: Globe, value: "62", label: "Countries" },
+          ].map((stat) => (
+            <motion.div
+              key={stat.label}
+              whileHover={{ y: -4 }}
+              className="p-5 rounded-2xl border border-border bg-card/40 backdrop-blur-sm text-center"
+            >
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                <stat.icon className="w-5 h-5 text-primary" />
+              </div>
+              <p className="font-display text-2xl font-bold text-foreground">{stat.value}</p>
+              <p className="text-xs text-muted-foreground font-body mt-1">{stat.label}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Testimonials */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto mb-16">
+          {[
+            {
+              name: "Alex K.",
+              role: "DeFi Trader",
+              quote: "MindFlow caught my panic-selling pattern before I even noticed it. Saved me from a $14k loss during the last dip.",
+              rating: 5,
+            },
+            {
+              name: "Priya M.",
+              role: "NFT Collector",
+              quote: "The emotional AI feels like having a therapist who actually understands crypto. It's the tool I didn't know I needed.",
+              rating: 5,
+            },
+            {
+              name: "Jordan T.",
+              role: "Swing Trader",
+              quote: "My stress scores dropped 40% in two weeks. I make clearer decisions now and actually sleep before big unlocks.",
+              rating: 5,
+            },
+          ].map((testimonial, i) => (
+            <motion.div
+              key={testimonial.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.15 }}
+              className="p-6 rounded-2xl border border-border bg-card/40 backdrop-blur-sm hover:border-primary/20 transition-colors"
+            >
+              <div className="flex gap-1 mb-4">
+                {Array.from({ length: testimonial.rating }).map((_, j) => (
+                  <Star key={j} className="w-4 h-4 fill-primary text-primary" />
+                ))}
+              </div>
+              <p className="text-sm text-muted-foreground font-body leading-relaxed mb-5 italic">
+                "{testimonial.quote}"
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center">
+                  <span className="text-xs font-display font-bold text-primary">
+                    {testimonial.name.charAt(0)}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-display font-semibold text-foreground">{testimonial.name}</p>
+                  <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Community Highlights */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="p-8 md:p-10 rounded-2xl border border-primary/20 bg-primary/5 backdrop-blur-sm text-center">
+            <Heart className="w-8 h-8 text-primary mx-auto mb-4" />
+            <h3 className="font-display text-xl md:text-2xl font-bold text-foreground mb-3">
+              Wellness-First Trading Community
+            </h3>
+            <p className="text-muted-foreground font-body max-w-xl mx-auto mb-6 text-sm leading-relaxed">
+              Weekly group check-ins, anonymous mood boards, and shared insights — all encrypted on-chain. 
+              Your emotional data is never sold. Period.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { icon: Zap, label: "Weekly Live Sessions" },
+                { icon: Shield, label: "Anonymous & Encrypted" },
+                { icon: MessageCircle, label: "24/7 AI Support" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-background/50 text-xs font-display text-foreground"
+                >
+                  <item.icon className="w-3.5 h-3.5 text-primary" />
+                  {item.label}
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </section>
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-border py-8 px-6 text-center">
