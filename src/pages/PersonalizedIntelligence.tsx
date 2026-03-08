@@ -161,7 +161,19 @@ const PersonalizedIntelligence = () => {
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 20;
     const contentWidth = pageWidth - margin * 2;
+    const pageHeight = doc.internal.pageSize.getHeight();
     let y = 20;
+
+    const fillPageBg = () => {
+      doc.setFillColor(17, 19, 24);
+      doc.rect(0, 0, pageWidth, pageHeight, "F");
+    };
+
+    const newPage = () => {
+      doc.addPage();
+      fillPageBg();
+      y = 20;
+    };
 
     const addText = (text: string, size: number, style: "normal" | "bold" = "normal", color: [number, number, number] = [255, 255, 255]) => {
       doc.setFontSize(size);
@@ -169,7 +181,7 @@ const PersonalizedIntelligence = () => {
       doc.setTextColor(...color);
       const lines = doc.splitTextToSize(text, contentWidth);
       for (const line of lines) {
-        if (y > 270) { doc.addPage(); y = 20; }
+        if (y > 270) { newPage(); }
         doc.text(line, margin, y);
         y += size * 0.45;
       }
@@ -177,9 +189,8 @@ const PersonalizedIntelligence = () => {
 
     const addGap = (gap: number) => { y += gap; };
 
-    // Background
-    doc.setFillColor(17, 19, 24);
-    doc.rect(0, 0, pageWidth, doc.internal.pageSize.getHeight(), "F");
+    // First page background
+    fillPageBg();
 
     // Title
     addText("MindFlow — Trading Mind Report", 18, "bold", [56, 209, 187]);
