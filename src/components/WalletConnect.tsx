@@ -16,8 +16,13 @@ const WalletConnect = () => {
   };
 
   const handleConnect = async () => {
+    const inIframe = isInIframe();
+    console.log("WalletConnect: inIframe =", inIframe);
+    console.log("WalletConnect: window.solana =", (window as any)?.solana);
+    console.log("WalletConnect: window.phantom =", (window as any)?.phantom);
+
     // In iframe, wallet extensions are inaccessible
-    if (isInIframe()) {
+    if (inIframe) {
       toast({
         title: "Open in a new tab",
         description: "Wallet extensions can't be accessed inside the preview. Open the published URL directly in your browser.",
