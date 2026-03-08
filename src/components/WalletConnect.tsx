@@ -9,7 +9,7 @@ const WalletConnect = () => {
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState("");
   const [walletType, setWalletType] = useState<WalletType>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
+  
 
   const isInIframe = () => {
     try {
