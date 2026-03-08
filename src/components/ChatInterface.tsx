@@ -107,7 +107,11 @@ const ChatInterface = () => {
                     : "bg-secondary text-secondary-foreground rounded-bl-md"
                 }`}
               >
-                {msg.content}
+                {msg.role === "user" ? msg.content : (
+                  <div className="prose prose-sm prose-invert max-w-none">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
