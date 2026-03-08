@@ -148,6 +148,20 @@ const PersonalizedIntelligence = () => {
   const [revealedSections, setRevealedSections] = useState(0);
   const [checkinData, setCheckinData] = useState<CheckinAnswer[]>([]);
   const [report, setReport] = useState<ReportSection[]>([]);
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const downloadPDF = () => {
+    if (!reportRef.current) return;
+    const opt = {
+      margin: [0.5, 0.5],
+      filename: "MindFlow-Trading-Mind-Report.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#111318" },
+      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+    };
+    html2pdf().set(opt).from(reportRef.current).save();
+    toast({ title: "Downloading PDF", description: "Your report is being generated..." });
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem("mindflow_checkin");
