@@ -41,13 +41,19 @@ const ChatInterface = () => {
     setInput("");
     setIsTyping(true);
 
+    // Build conversation history for context
+    const allMessages = [...messages, userMsg];
+    const conversationHistory = allMessages
+      .map((m) => `${m.role === "user" ? "User" : "MindFlow"}: ${m.content}`)
+      .join("\n");
+
     try {
       const response = await fetch("https://e975-119-42-59-192.ngrok-free.app/api/ollama", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           system: SYSTEM_MESSAGE,
-          prompt: userMessage,
+          prompt: `Here is the conversation so far:\n\n${conversationHistory}\n\nRespond to the user's latest message as MindFlow. Do not repeat the conversation history, just reply naturally.`,
         }),
       });
 
