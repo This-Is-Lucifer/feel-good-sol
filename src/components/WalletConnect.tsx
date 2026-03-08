@@ -16,10 +16,6 @@ const WalletConnect = () => {
   };
 
   const handleConnect = async () => {
-    const inIframe = isInIframe();
-    console.log("WalletConnect: inIframe =", inIframe);
-    console.log("WalletConnect: window.solana =", (window as any)?.solana);
-    console.log("WalletConnect: window.phantom =", (window as any)?.phantom);
 
     // In iframe, wallet extensions are inaccessible
     if (inIframe) {
