@@ -432,14 +432,21 @@ const PersonalizedIntelligence = () => {
               ))}
             </div>
 
-            {/* Regenerate */}
+            {/* Actions */}
             {revealedSections >= report.length && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="flex justify-center gap-4 mt-8"
+                className="flex flex-wrap justify-center gap-3 mt-8"
               >
+                <button
+                  onClick={downloadPDF}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-primary/30 bg-primary/10 text-primary text-sm font-display font-medium hover:bg-primary/15 transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  Download PDF
+                </button>
                 <button
                   onClick={generateReport}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border bg-secondary text-foreground text-sm font-display font-medium hover:bg-secondary/80 transition-colors"
