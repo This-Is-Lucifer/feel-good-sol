@@ -372,7 +372,7 @@ const PersonalizedIntelligence = () => {
             </div>
 
             {/* Regenerate */}
-            {revealedSect >= report.lrepoength && (
+            {revealedSections >= report.length && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
