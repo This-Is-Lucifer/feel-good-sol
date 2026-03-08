@@ -164,7 +164,7 @@ const WalletConnect = () => {
   }, []);
 
   const truncated = address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "";
-  const balanceDisplay = balance !== null ? `${balance.toFixed(4)} SOL` : "";
+  const balanceDisplay = balance !== null ? `${balance.toFixed(4)} SOL` : "◎ ...";
 
   const copyAddress = () => {
     navigator.clipboard.writeText(address);
