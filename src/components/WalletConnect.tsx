@@ -98,14 +98,17 @@ const WalletConnect = () => {
     }
   };
 
-  const handleDisconnect = async () => {
+  const handleDisconnect = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     setShowMenu(false);
-    const provider = getProvider();
-    if (provider) {
-      try { await provider.disconnect(); } catch {}
-    }
     setConnected(false);
     setAddress("");
+    try {
+      const provider = getProvider();
+      if (provider) await provider.disconnect();
+    } catch {}
+    toast({ title: "Wallet disconnected" });
   };
 
   // Listen for account changes in Phantom
