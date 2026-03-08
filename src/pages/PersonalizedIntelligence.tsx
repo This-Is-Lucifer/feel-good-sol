@@ -205,7 +205,7 @@ const PersonalizedIntelligence = () => {
 
     // Sections
     report.forEach((section) => {
-      if (y > 240) { doc.addPage(); y = 20; doc.setFillColor(17, 19, 24); doc.rect(0, 0, pageWidth, doc.internal.pageSize.getHeight(), "F"); }
+      if (y > 240) { newPage(); }
 
       addText(`${section.title}  —  ${section.score}/100 (${getScoreLabel(section.score)})`, 12, "bold", [220, 225, 235]);
       addGap(2);
