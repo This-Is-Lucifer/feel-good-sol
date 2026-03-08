@@ -9,6 +9,7 @@ const WalletConnect = () => {
   const [address, setAddress] = useState("");
   const [balance, setBalance] = useState<number | null>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const isInIframe = () => {
     try {
