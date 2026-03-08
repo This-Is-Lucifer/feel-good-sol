@@ -18,7 +18,7 @@ const WalletConnect = () => {
   const handleConnect = async () => {
 
     // In iframe, wallet extensions are inaccessible
-    if (inIframe) {
+    if (isInIframe()) {
       toast({
         title: "Open in a new tab",
         description: "Wallet extensions can't be accessed inside the preview. Open the published URL directly in your browser.",
