@@ -116,6 +116,29 @@ const EmotionalAI = () => {
     }
   }, []);
 
+  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCapturedImage(reader.result as string);
+      setCameraError(false);
+      setTimeout(() => setShowAnalysis(true), 1500);
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  const retakePhoto = useCallback(() => {
+    setCapturedImage(null);
+    setShowAnalysis(false);
+    // Stop any active camera stream
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream?.getTracks().forEach((t) => t.stop());
+    }
+    setCameraActive(false);
+  }, []);
+
   const setAnswer = (val: string | number) => {
     setAnswers((prev) => ({ ...prev, [q.id]: val }));
   };
