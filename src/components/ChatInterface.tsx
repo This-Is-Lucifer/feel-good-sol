@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, Trash2 } from "lucide-react";
+import { Send, Loader2, Trash2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
@@ -21,13 +21,60 @@ const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [ttsEnabled, setTtsEnabled] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Speech-to-Text setup
+  const startListening = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.error("Speech recognition not supported");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript)
+        .join("");
+      setInput(transcript);
+    };
+
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+
+    recognition.start();
+    recognitionRef.current = recognition;
+    setIsListening(true);
+  }, []);
+
+  const stopListening = useCallback(() => {
+    recognitionRef.current?.stop();
+    setIsListening(false);
+  }, []);
+
+  // Text-to-Speech
+  const speakText = useCallback((text: string) => {
+    if (!ttsEnabled) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  }, [ttsEnabled]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -42,7 +89,6 @@ const ChatInterface = () => {
     setInput("");
     setIsTyping(true);
 
-    // Send only the last user message
     try {
       const response = await fetch("https://e975-119-42-59-192.ngrok-free.app/api/ollama", {
         method: "POST",
@@ -64,17 +110,24 @@ const ChatInterface = () => {
         content: aiText,
       };
       setMessages((prev) => [...prev, aiMsg]);
+      speakText(aiText);
     } catch (err) {
       console.error("Chat AI error:", err);
+      const fallback = "I'm having trouble connecting right now. Please try again in a moment. 🙏";
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "I'm having trouble connecting right now. Please try again in a moment. 🙏",
+        content: fallback,
       };
       setMessages((prev) => [...prev, aiMsg]);
     } finally {
       setIsTyping(false);
     }
+  };
+
+  const handleClear = () => {
+    window.speechSynthesis.cancel();
+    setMessages([INITIAL_MESSAGE]);
   };
 
   return (
@@ -87,8 +140,15 @@ const ChatInterface = () => {
         </span>
         <span className="text-sm font-display font-medium text-foreground/80">MindFlow AI</span>
         <button
-          onClick={() => setMessages([INITIAL_MESSAGE])}
+          onClick={() => setTtsEnabled(!ttsEnabled)}
           className="p-1 rounded-md hover:bg-secondary/50 text-muted-foreground hover:text-foreground transition-colors ml-auto"
+          title={ttsEnabled ? "Mute voice" : "Unmute voice"}
+        >
+          {ttsEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+        </button>
+        <button
+          onClick={handleClear}
+          className="p-1 rounded-md hover:bg-secondary/50 text-muted-foreground hover:text-foreground transition-colors"
           title="Clear chat"
         >
           <Trash2 className="w-3.5 h-3.5" />
@@ -141,12 +201,23 @@ const ChatInterface = () => {
       {/* Input */}
       <div className="px-4 py-3 border-t border-border">
         <div className="flex items-center gap-2 bg-secondary/50 rounded-xl px-3 py-2">
+          <button
+            onClick={isListening ? stopListening : startListening}
+            className={`p-1.5 rounded-lg transition-all ${
+              isListening
+                ? "bg-destructive text-destructive-foreground animate-pulse"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+            }`}
+            title={isListening ? "Stop listening" : "Start voice input"}
+          >
+            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          </button>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            placeholder="How are you feeling today?"
+            placeholder={isListening ? "Listening..." : "How are you feeling today?"}
             className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
           />
           <button
