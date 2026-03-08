@@ -479,7 +479,7 @@ const EmotionalAI = () => {
                           className="mt-4 p-4 rounded-xl border border-border bg-secondary/50 space-y-3"
                         >
                           <p className="text-xs uppercase tracking-widest font-display text-primary font-semibold">
-                            Emotion Analysis (Mock)
+                            Emotion Analysis
                           </p>
                           {mockEmotions.map((e) => (
                             <div key={e.label} className="flex items-center gap-3">
