@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Camera, ChevronRight, ChevronLeft, Smile, Frown, Meh, AlertTriangle, TrendingUp, X } from "lucide-react";
+import { Brain, Camera, ChevronRight, ChevronLeft, Smile, Frown, Meh, AlertTriangle, TrendingUp, X, Upload, RotateCcw } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface Question {
@@ -75,6 +75,7 @@ const EmotionalAI = () => {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const q = questions[currentQ];
 
@@ -115,6 +116,29 @@ const EmotionalAI = () => {
     }
   }, []);
 
+  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCapturedImage(reader.result as string);
+      setCameraError(false);
+      setTimeout(() => setShowAnalysis(true), 1500);
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  const retakePhoto = useCallback(() => {
+    setCapturedImage(null);
+    setShowAnalysis(false);
+    // Stop any active camera stream
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream?.getTracks().forEach((t) => t.stop());
+    }
+    setCameraActive(false);
+  }, []);
+
   const setAnswer = (val: string | number) => {
     setAnswers((prev) => ({ ...prev, [q.id]: val }));
   };
@@ -128,6 +152,10 @@ const EmotionalAI = () => {
         .filter((q) => q.type !== "camera")
         .map((q) => ({ question: q.text, answer: answers[q.id] ?? "—", category: q.category }));
       localStorage.setItem("mindflow_checkin", JSON.stringify(savedData));
+      // Save captured image if available
+      if (capturedImage) {
+        localStorage.setItem("mindflow_selfie", capturedImage);
+      }
     }
   };
 
@@ -250,45 +278,47 @@ const EmotionalAI = () => {
               {/* Camera */}
               {q.type === "camera" && (
                 <div className="flex flex-col items-center gap-4">
-                  {!capturedImage && !cameraActive && !cameraError && (
-                    <div className="flex flex-col items-center gap-3">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="user"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+
+                  {!capturedImage && !cameraActive && (
+                    <div className="flex flex-col items-center gap-4 w-full max-w-sm">
+                      {/* Primary: Open Camera */}
                       <button
                         onClick={startCamera}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl border border-primary/30 bg-primary/10 text-primary text-sm font-display font-medium hover:bg-primary/15 transition-colors"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl border border-primary/30 bg-primary/10 text-primary text-sm font-display font-medium hover:bg-primary/15 transition-colors"
                       >
-                        <Camera className="w-4 h-4" />
+                        <Camera className="w-5 h-5" />
                         Open Camera
                       </button>
+
+                      {/* Fallback: Upload photo */}
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-secondary/50 text-foreground text-sm font-display font-medium hover:bg-secondary transition-colors"
+                      >
+                        <Upload className="w-4 h-4" />
+                        Upload a Selfie Instead
+                      </button>
+
+                      {cameraError && (
+                        <p className="text-xs text-destructive text-center">
+                          Camera access denied. Use the upload option or skip.
+                        </p>
+                      )}
+
                       <button
                         onClick={next}
                         className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
                       >
                         Skip this step
                       </button>
-                    </div>
-                  )}
-
-                  {cameraError && (
-                    <div className="w-full max-w-sm p-6 rounded-xl border border-destructive/30 bg-destructive/5 text-center space-y-3">
-                      <AlertTriangle className="w-8 h-8 text-destructive mx-auto" />
-                      <p className="text-sm text-foreground font-display font-medium">Camera not available</p>
-                      <p className="text-xs text-muted-foreground">
-                        Camera access was denied or is not supported in this browser. You can skip this step.
-                      </p>
-                      <div className="flex gap-2 justify-center pt-1">
-                        <button
-                          onClick={startCamera}
-                          className="px-4 py-2 rounded-lg border border-border bg-secondary/50 text-sm text-foreground hover:bg-secondary transition-colors"
-                        >
-                          Try Again
-                        </button>
-                        <button
-                          onClick={next}
-                          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
-                        >
-                          Skip
-                        </button>
-                      </div>
                     </div>
                   )}
 
@@ -299,14 +329,14 @@ const EmotionalAI = () => {
                         autoPlay
                         playsInline
                         muted
-                        className="w-full rounded-xl border border-border"
+                        className="w-full aspect-[4/3] object-cover rounded-xl border border-border bg-secondary"
                       />
                       <button
                         onClick={capturePhoto}
-                        className="mt-3 w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-display font-medium hover:bg-primary/90 transition-colors"
+                        className="mt-3 w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-display font-medium hover:bg-primary/90 transition-colors"
                       >
                         <Camera className="w-4 h-4" />
-                        Capture
+                        Capture Photo
                       </button>
                     </div>
                   )}
@@ -316,13 +346,11 @@ const EmotionalAI = () => {
                       <div className="relative">
                         <img src={capturedImage} alt="Captured selfie" className="w-full rounded-xl border border-border" />
                         <button
-                          onClick={() => {
-                            setCapturedImage(null);
-                            setShowAnalysis(false);
-                          }}
-                          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/80 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground"
+                          onClick={retakePhoto}
+                          className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-background/90 border border-border text-xs text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <RotateCcw className="w-3 h-3" />
+                          Retake
                         </button>
                       </div>
 
