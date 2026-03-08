@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Camera, ChevronRight, ChevronLeft, Smile, Frown, Meh, AlertTriangle, TrendingUp, X, Upload, RotateCcw } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -11,53 +11,146 @@ interface Question {
   options?: string[];
 }
 
-const questions: Question[] = [
-  {
-    id: 1,
-    text: "How are you feeling right now?",
-    type: "choice",
-    category: "mood",
-    options: ["Great", "Good", "Neutral", "Anxious", "Stressed"],
-  },
-  {
-    id: 2,
-    text: "On a scale of 1–10, how stressed do you feel about your portfolio?",
-    type: "scale",
-    category: "trading",
-  },
-  {
-    id: 3,
-    text: "Describe your current emotional state in a few words.",
-    type: "text",
-    category: "mood",
-  },
-  {
-    id: 4,
-    text: "Have you made any impulsive trades in the last 24 hours?",
-    type: "choice",
-    category: "trading",
-    options: ["Yes, several", "One or two", "No", "I almost did"],
-  },
-  {
-    id: 5,
-    text: "Let's read your face — capture a selfie for mock emotion analysis.",
-    type: "camera",
-    category: "mood",
-  },
-  {
-    id: 6,
-    text: "How strong is your FOMO right now?",
-    type: "scale",
-    category: "trading",
-  },
-  {
-    id: 7,
-    text: "What's driving your trading decisions today?",
-    type: "choice",
-    category: "trading",
-    options: ["Research & data", "Gut feeling", "Social media hype", "Fear of missing out"],
-  },
+const questionPool: Question[] = [
+  // Mood - Choice
+  { id: 1, text: "How are you feeling right now?", type: "choice", category: "mood", options: ["Great", "Good", "Neutral", "Anxious", "Stressed"] },
+  { id: 2, text: "How well did you sleep last night?", type: "choice", category: "mood", options: ["Very well", "Okay", "Poorly", "Barely slept"] },
+  { id: 3, text: "How would you describe your energy level?", type: "choice", category: "mood", options: ["High energy", "Moderate", "Low", "Exhausted"] },
+  { id: 4, text: "Are you feeling optimistic about today?", type: "choice", category: "mood", options: ["Very optimistic", "Somewhat", "Neutral", "Pessimistic"] },
+  { id: 5, text: "How confident are you in your decisions today?", type: "choice", category: "mood", options: ["Very confident", "Somewhat", "Unsure", "Not at all"] },
+  { id: 6, text: "Have you taken a break today?", type: "choice", category: "mood", options: ["Yes, multiple", "One short break", "Not yet", "I don't plan to"] },
+  { id: 7, text: "How is your focus right now?", type: "choice", category: "mood", options: ["Laser focused", "Good", "Distracted", "Can't concentrate"] },
+  { id: 8, text: "Are you feeling any physical tension?", type: "choice", category: "mood", options: ["None", "Slight", "Moderate", "Severe"] },
+  { id: 9, text: "How hydrated are you today?", type: "choice", category: "mood", options: ["Well hydrated", "Could drink more", "Barely any water", "Haven't thought about it"] },
+  { id: 10, text: "Did you exercise recently?", type: "choice", category: "mood", options: ["Today", "Yesterday", "This week", "Not recently"] },
+
+  // Mood - Text
+  { id: 11, text: "Describe your current emotional state in a few words.", type: "text", category: "mood" },
+  { id: 12, text: "What's the first thought that comes to mind right now?", type: "text", category: "mood" },
+  { id: 13, text: "What would make today a great day for you?", type: "text", category: "mood" },
+  { id: 14, text: "Is there anything weighing on your mind?", type: "text", category: "mood" },
+  { id: 15, text: "How would you describe your mood in one sentence?", type: "text", category: "mood" },
+  { id: 16, text: "What's one thing you're grateful for today?", type: "text", category: "mood" },
+  { id: 17, text: "What emotion are you trying to avoid right now?", type: "text", category: "mood" },
+  { id: 18, text: "Describe how your body feels physically right now.", type: "text", category: "mood" },
+  { id: 19, text: "What's your inner dialogue saying to you?", type: "text", category: "mood" },
+  { id: 20, text: "If you could change one thing about how you feel, what would it be?", type: "text", category: "mood" },
+
+  // Mood - Scale
+  { id: 21, text: "On a scale of 1–10, how happy are you right now?", type: "scale", category: "mood" },
+  { id: 22, text: "Rate your mental clarity right now (1–10).", type: "scale", category: "mood" },
+  { id: 23, text: "How calm do you feel on a scale of 1–10?", type: "scale", category: "mood" },
+  { id: 24, text: "Rate your motivation level (1–10).", type: "scale", category: "mood" },
+  { id: 25, text: "How emotionally stable do you feel (1–10)?", type: "scale", category: "mood" },
+  { id: 26, text: "Rate your patience level right now (1–10).", type: "scale", category: "mood" },
+  { id: 27, text: "How present/mindful are you feeling (1–10)?", type: "scale", category: "mood" },
+  { id: 28, text: "Rate your self-confidence today (1–10).", type: "scale", category: "mood" },
+  { id: 29, text: "How irritable are you right now (1–10)?", type: "scale", category: "mood" },
+  { id: 30, text: "Rate how overwhelmed you feel (1–10).", type: "scale", category: "mood" },
+
+  // Trading - Choice
+  { id: 31, text: "Have you made any impulsive trades in the last 24 hours?", type: "choice", category: "trading", options: ["Yes, several", "One or two", "No", "I almost did"] },
+  { id: 32, text: "What's driving your trading decisions today?", type: "choice", category: "trading", options: ["Research & data", "Gut feeling", "Social media hype", "Fear of missing out"] },
+  { id: 33, text: "How do you handle a losing trade?", type: "choice", category: "trading", options: ["Accept & move on", "Try to recover immediately", "Feel frustrated for hours", "Stop trading for the day"] },
+  { id: 34, text: "Are you revenge trading after a loss?", type: "choice", category: "trading", options: ["Yes", "Tempted to", "No", "I don't know what that is"] },
+  { id: 35, text: "How often do you check your portfolio?", type: "choice", category: "trading", options: ["Every few minutes", "Hourly", "A few times a day", "Once a day or less"] },
+  { id: 36, text: "Are you following your trading plan today?", type: "choice", category: "trading", options: ["Strictly", "Mostly", "Not really", "I don't have one"] },
+  { id: 37, text: "Have you set stop-losses on your current positions?", type: "choice", category: "trading", options: ["Yes, all of them", "Some", "No", "I don't use stop-losses"] },
+  { id: 38, text: "How do you feel about your recent performance?", type: "choice", category: "trading", options: ["Very satisfied", "It's okay", "Disappointed", "Frustrated"] },
+  { id: 39, text: "Are you overexposed to a single asset?", type: "choice", category: "trading", options: ["Yes", "Slightly", "No, well diversified", "Not sure"] },
+  { id: 40, text: "When was your last profitable trade?", type: "choice", category: "trading", options: ["Today", "This week", "Last week", "Can't remember"] },
+
+  // Trading - Text
+  { id: 41, text: "What's your biggest trading fear right now?", type: "text", category: "trading" },
+  { id: 42, text: "Describe your trading mindset in one sentence.", type: "text", category: "trading" },
+  { id: 43, text: "What lesson has the market taught you recently?", type: "text", category: "trading" },
+  { id: 44, text: "What would you tell a beginner trader right now?", type: "text", category: "trading" },
+  { id: 45, text: "What's your biggest regret in trading this week?", type: "text", category: "trading" },
+  { id: 46, text: "Describe a trade you're proud of recently.", type: "text", category: "trading" },
+  { id: 47, text: "What's the hardest part about trading for you?", type: "text", category: "trading" },
+  { id: 48, text: "What's your current exit strategy for open positions?", type: "text", category: "trading" },
+  { id: 49, text: "How do emotions typically affect your trading?", type: "text", category: "trading" },
+  { id: 50, text: "What would you do differently if you could restart today?", type: "text", category: "trading" },
+
+  // Trading - Scale
+  { id: 51, text: "On a scale of 1–10, how stressed do you feel about your portfolio?", type: "scale", category: "trading" },
+  { id: 52, text: "How strong is your FOMO right now (1–10)?", type: "scale", category: "trading" },
+  { id: 53, text: "Rate your risk tolerance today (1–10).", type: "scale", category: "trading" },
+  { id: 54, text: "How disciplined have you been with trades today (1–10)?", type: "scale", category: "trading" },
+  { id: 55, text: "Rate your greed level right now (1–10).", type: "scale", category: "trading" },
+  { id: 56, text: "How anxious are you about the market (1–10)?", type: "scale", category: "trading" },
+  { id: 57, text: "Rate your attachment to current positions (1–10).", type: "scale", category: "trading" },
+  { id: 58, text: "How much is social media influencing your trades (1–10)?", type: "scale", category: "trading" },
+  { id: 59, text: "Rate your overconfidence level (1–10).", type: "scale", category: "trading" },
+  { id: 60, text: "How much pressure do you feel to make money today (1–10)?", type: "scale", category: "trading" },
+
+  // Extra Mood - Choice
+  { id: 61, text: "How social are you feeling today?", type: "choice", category: "mood", options: ["Very social", "Neutral", "Prefer solitude", "Avoiding everyone"] },
+  { id: 62, text: "How creative do you feel right now?", type: "choice", category: "mood", options: ["Very creative", "Somewhat", "Not really", "Mentally blocked"] },
+  { id: 63, text: "What's your stress-relief method?", type: "choice", category: "mood", options: ["Exercise", "Meditation", "Music", "Nothing specific"] },
+  { id: 64, text: "Have you eaten well today?", type: "choice", category: "mood", options: ["Balanced meals", "Snacks only", "Skipped meals", "Stress eating"] },
+  { id: 65, text: "How connected do you feel to others today?", type: "choice", category: "mood", options: ["Very connected", "Somewhat", "Isolated", "Lonely"] },
+
+  // Extra Mood - Text
+  { id: 66, text: "What's one positive affirmation you can tell yourself?", type: "text", category: "mood" },
+  { id: 67, text: "What triggered your current mood?", type: "text", category: "mood" },
+  { id: 68, text: "What coping mechanism are you using right now?", type: "text", category: "mood" },
+  { id: 69, text: "What's one thing that made you smile today?", type: "text", category: "mood" },
+  { id: 70, text: "How would your best friend describe your mood right now?", type: "text", category: "mood" },
+
+  // Extra Mood - Scale
+  { id: 71, text: "Rate your overall wellbeing today (1–10).", type: "scale", category: "mood" },
+  { id: 72, text: "How anxious are you right now (1–10)?", type: "scale", category: "mood" },
+  { id: 73, text: "Rate your ability to handle setbacks today (1–10).", type: "scale", category: "mood" },
+  { id: 74, text: "How much mental bandwidth do you have left (1–10)?", type: "scale", category: "mood" },
+  { id: 75, text: "Rate your emotional awareness right now (1–10).", type: "scale", category: "mood" },
+
+  // Extra Trading - Choice
+  { id: 76, text: "Are you taking more risk than usual today?", type: "choice", category: "trading", options: ["Much more", "Slightly more", "About the same", "Less than usual"] },
+  { id: 77, text: "How often do you second-guess your trades?", type: "choice", category: "trading", options: ["Always", "Often", "Sometimes", "Rarely"] },
+  { id: 78, text: "Did market news affect your mood today?", type: "choice", category: "trading", options: ["Yes, positively", "Yes, negatively", "Slightly", "Not at all"] },
+  { id: 79, text: "Are you holding a position longer than planned?", type: "choice", category: "trading", options: ["Yes, hoping it recovers", "Yes, it's going well", "No", "I don't set timeframes"] },
+  { id: 80, text: "How do you react to seeing others profit?", type: "choice", category: "trading", options: ["Happy for them", "Jealous", "Motivated", "Frustrated"] },
+
+  // Extra Trading - Text
+  { id: 81, text: "What's one rule you've broken in trading recently?", type: "text", category: "trading" },
+  { id: 82, text: "What cognitive bias might be affecting you right now?", type: "text", category: "trading" },
+  { id: 83, text: "Describe your ideal trading state of mind.", type: "text", category: "trading" },
+  { id: 84, text: "What would a rational version of yourself do right now?", type: "text", category: "trading" },
+  { id: 85, text: "What's your biggest distraction while trading?", type: "text", category: "trading" },
+
+  // Extra Trading - Scale
+  { id: 86, text: "How much do you trust your current analysis (1–10)?", type: "scale", category: "trading" },
+  { id: 87, text: "Rate your fear of loss right now (1–10).", type: "scale", category: "trading" },
+  { id: 88, text: "How attached are you to being 'right' (1–10)?", type: "scale", category: "trading" },
+  { id: 89, text: "Rate your willingness to cut losses today (1–10).", type: "scale", category: "trading" },
+  { id: 90, text: "How much is ego driving your trades (1–10)?", type: "scale", category: "trading" },
+
+  // More variety
+  { id: 91, text: "Are you trading to make money or to feel something?", type: "choice", category: "trading", options: ["To make money", "For the thrill", "Both", "I'm not sure"] },
+  { id: 92, text: "How long can you go without checking charts?", type: "choice", category: "trading", options: ["Minutes", "An hour", "Several hours", "All day"] },
+  { id: 93, text: "What's your relationship with uncertainty?", type: "text", category: "trading" },
+  { id: 94, text: "Do you feel in control of your trading?", type: "choice", category: "trading", options: ["Fully in control", "Mostly", "Barely", "Not at all"] },
+  { id: 95, text: "Rate how impulsive you feel right now (1–10).", type: "scale", category: "trading" },
+  { id: 96, text: "What would happen if you took the rest of the day off?", type: "text", category: "mood" },
+  { id: 97, text: "How do you feel about asking for help?", type: "choice", category: "mood", options: ["Comfortable", "Somewhat okay", "Reluctant", "I never ask"] },
+  { id: 98, text: "Rate your emotional resilience today (1–10).", type: "scale", category: "mood" },
+  { id: 99, text: "What's one boundary you should set today?", type: "text", category: "mood" },
+  { id: 100, text: "How would you rate your self-awareness right now (1–10)?", type: "scale", category: "mood" },
 ];
+
+// Camera question is always included as the last question
+const cameraQuestion: Question = {
+  id: 999,
+  text: "Let's read your face — capture a selfie for mock emotion analysis.",
+  type: "camera",
+  category: "mood",
+};
+
+function shuffleAndPick<T>(arr: T[], count: number): T[] {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
 
 const mockEmotions = [
   { label: "Calm", confidence: 72, icon: Smile, color: "text-primary" },
@@ -67,6 +160,12 @@ const mockEmotions = [
 ];
 
 const EmotionalAI = () => {
+  // Pick 9 random questions + 1 camera question = 10 total
+  const questions = useMemo(() => {
+    const picked = shuffleAndPick(questionPool, 9);
+    return [...picked, cameraQuestion];
+  }, []);
+
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | number>>({});
   const [completed, setCompleted] = useState(false);
