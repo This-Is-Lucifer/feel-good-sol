@@ -326,7 +326,7 @@ const PersonalizedIntelligence = () => {
 
             {/* Sections */}
             <div className="space-y-4">
-              {mockReport.map((section, i) => (
+              {report.map((section, i) => (
                 <motion.div
                   key={section.title}
                   initial={{ opacity: 0, x: 20 }}
