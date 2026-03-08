@@ -7,7 +7,25 @@ const WalletConnect = () => {
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState("");
 
+  const isInIframe = () => {
+    try {
+      return window.self !== window.top;
+    } catch {
+      return true;
+    }
+  };
+
   const handleConnect = async () => {
+    // In iframe, wallet extensions are inaccessible
+    if (isInIframe()) {
+      toast({
+        title: "Open in a new tab",
+        description: "Wallet extensions can't be accessed inside the preview. Open the published URL directly in your browser.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const solana = (window as any)?.solana;
     const phantom = (window as any)?.phantom?.solana;
     const provider = phantom || solana;
@@ -23,18 +41,8 @@ const WalletConnect = () => {
         toast({ title: "Connection rejected", description: "You declined the wallet request.", variant: "destructive" });
       }
     } else {
-      // Detect if running in iframe (preview)
-      const inIframe = window.self !== window.top;
-      if (inIframe) {
-        toast({
-          title: "Open in a new tab",
-          description: "Wallet extensions can't be accessed inside the preview. Open the published URL directly in your browser.",
-          variant: "destructive",
-        });
-      } else {
-        toast({ title: "Phantom not found", description: "Redirecting to install Phantom..." });
-        window.open("https://phantom.app/", "_blank");
-      }
+      toast({ title: "Phantom not found", description: "Redirecting to install Phantom..." });
+      window.open("https://phantom.app/", "_blank");
     }
   };
 
