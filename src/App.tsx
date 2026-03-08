@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Features from "./pages/Features";
 import EmotionalAI from "./pages/EmotionalAI";
+import PersonalizedIntelligence from "./pages/PersonalizedIntelligence";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
