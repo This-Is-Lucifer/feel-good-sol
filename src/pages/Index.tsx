@@ -12,9 +12,11 @@ const Index = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Marquee Banner */}
       <div className="relative z-20 bg-primary/10 border-b border-primary/20 overflow-hidden py-1.5">
-        <marquee scrollamount="4" className="text-xs font-display text-primary tracking-wide">
-          ⚠️ Only Compatible with Desktop Screens
-        </marquee>
+        <div className="animate-[marquee_15s_linear_infinite] whitespace-nowrap">
+          <span className="text-xs font-display text-primary tracking-wide">
+            ⚠️ Only Compatible with Desktop Screens
+          </span>
+        </div>
       </div>
       {/* Background ambient effects */}
       <div className="fixed inset-0 pointer-events-none">
