@@ -86,7 +86,14 @@ const ChatInterface = () => {
           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
         </span>
         <span className="text-sm font-display font-medium text-foreground/80">MindFlow AI</span>
-        <span className="text-xs text-muted-foreground ml-auto">powered by AI</span>
+        <button
+          onClick={() => setMessages([INITIAL_MESSAGE])}
+          className="p-1 rounded-md hover:bg-secondary/50 text-muted-foreground hover:text-foreground transition-colors ml-auto"
+          title="Clear chat"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+        <span className="text-xs text-muted-foreground">powered by AI</span>
       </div>
 
       {/* Messages */}
