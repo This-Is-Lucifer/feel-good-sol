@@ -90,6 +90,14 @@ const PersonalizedIntelligence = () => {
   const [generating, setGenerating] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [revealedSections, setRevealedSections] = useState(0);
+  const [checkinData, setCheckinData] = useState<CheckinAnswer[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("mindflow_checkin");
+    if (saved) {
+      try { setCheckinData(JSON.parse(saved)); } catch { /* ignore */ }
+    }
+  }, []);
 
   const generateReport = () => {
     setGenerating(true);
