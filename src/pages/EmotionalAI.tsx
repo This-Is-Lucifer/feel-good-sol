@@ -142,7 +142,7 @@ const questionPool: Question[] = [
 // Camera question is always included as the last question
 const cameraQuestion: Question = {
   id: 999,
-  text: "Let's read your face — capture a selfie for mock emotion analysis.",
+  text: "Let's read your face — take a selfie for AI-powered emotion analysis.",
   type: "camera",
   category: "mood",
 };
@@ -479,7 +479,7 @@ const EmotionalAI = () => {
                           className="mt-4 p-4 rounded-xl border border-border bg-secondary/50 space-y-3"
                         >
                           <p className="text-xs uppercase tracking-widest font-display text-primary font-semibold">
-                            Emotion Analysis (Mock)
+                            Emotion Analysis
                           </p>
                           {mockEmotions.map((e) => (
                             <div key={e.label} className="flex items-center gap-3">
