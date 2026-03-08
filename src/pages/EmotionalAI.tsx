@@ -84,6 +84,12 @@ const EmotionalAI = () => {
   const startCamera = useCallback(async () => {
     setCameraError(false);
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        // No camera API available (e.g. iframe restrictions) — fallback to file upload
+        setCameraError(true);
+        fileInputRef.current?.click();
+        return;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -94,6 +100,8 @@ const EmotionalAI = () => {
       }
     } catch {
       setCameraError(true);
+      // Auto-open file picker as fallback
+      fileInputRef.current?.click();
     }
   }, []);
 
