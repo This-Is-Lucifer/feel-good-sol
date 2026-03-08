@@ -74,7 +74,7 @@ const WalletConnect = () => {
   };
 
   const connectMetaMask = async () => {
-    setShowDropdown(false);
+    
 
     if (isInIframe()) {
       toast({
