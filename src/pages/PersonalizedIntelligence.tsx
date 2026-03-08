@@ -168,7 +168,7 @@ const PersonalizedIntelligence = () => {
     try {
       const response = await fetch("https://e975-119-42-59-192.ngrok-free.app/api/ollama", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({
           system: "You are MindFlow, an AI emotional intelligence analyst for crypto traders. Analyze the user's emotional check-in responses and provide a personalized trading psychology assessment. Be empathetic, specific, and actionable.",
           prompt: `Here are the user's emotional check-in responses:\n\n${answersText}\n\nProvide a personalized emotional intelligence assessment for this trader.`,
