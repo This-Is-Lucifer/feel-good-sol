@@ -152,6 +152,10 @@ const EmotionalAI = () => {
         .filter((q) => q.type !== "camera")
         .map((q) => ({ question: q.text, answer: answers[q.id] ?? "—", category: q.category }));
       localStorage.setItem("mindflow_checkin", JSON.stringify(savedData));
+      // Save captured image if available
+      if (capturedImage) {
+        localStorage.setItem("mindflow_selfie", capturedImage);
+      }
     }
   };
 
