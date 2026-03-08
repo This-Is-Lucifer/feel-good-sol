@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Features from "./pages/Features";
 import EmotionalAI from "./pages/EmotionalAI";
 import PersonalizedIntelligence from "./pages/PersonalizedIntelligence";
+import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/features" element={<Features />} />
           <Route path="/emotional-ai" element={<EmotionalAI />} />
           <Route path="/personalized-intelligence" element={<PersonalizedIntelligence />} />
+          <Route path="/support" element={<Support />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

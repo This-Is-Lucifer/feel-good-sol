@@ -31,7 +31,7 @@ const Index = () => {
           <a href="/emotional-ai" className="hover:text-foreground transition-colors">Emotional AI</a>
           <a href="/personalized-intelligence" className="hover:text-foreground transition-colors">Intelligence</a>
           <a href="#community" className="hover:text-foreground transition-colors">Community</a>
-          <a href="https://solscan.io/account/6uMVznyeBD78PkBKucC3QyoqTgyyfmdgR6MAdPmkEddL" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors text-primary">Support ☕</a>
+          <a href="/support" className="hover:text-foreground transition-colors text-primary">Support ☕</a>
         </nav>
 
         <WalletConnect />
