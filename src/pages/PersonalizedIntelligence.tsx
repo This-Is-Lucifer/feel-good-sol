@@ -421,7 +421,9 @@ const PersonalizedIntelligence = () => {
                     </div>
                   </div>
 
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-3">{section.insight}</p>
+                  <div className="text-sm text-muted-foreground leading-relaxed mb-3 prose prose-sm prose-invert max-w-none prose-headings:text-foreground prose-headings:font-display prose-headings:text-sm prose-p:text-muted-foreground prose-strong:text-foreground prose-blockquote:border-primary/30 prose-blockquote:text-muted-foreground prose-li:text-muted-foreground">
+                    <ReactMarkdown>{section.insight}</ReactMarkdown>
+                  </div>
 
                   <div className="p-3 rounded-xl bg-primary/5 border border-primary/10">
                     <p className="text-xs uppercase tracking-widest font-display text-primary font-semibold mb-1">
