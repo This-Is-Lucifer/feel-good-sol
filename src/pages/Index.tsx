@@ -49,9 +49,9 @@ const Index = () => {
             Trusted by 12,000+ Solana traders
           </div>
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight tracking-tight">
-            Your Mind Matters
+            Trade Smarter,
             <br />
-            <span className="text-primary">More Than Markets</span>
+            <span className="text-primary">Together We Rise</span>
           </h1>
           <p className="mt-5 text-muted-foreground text-base md:text-lg max-w-xl mx-auto font-body leading-relaxed">
             AI-powered emotional intelligence for crypto traders. Navigate volatility with clarity, not anxiety.
