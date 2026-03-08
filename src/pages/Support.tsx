@@ -47,7 +47,7 @@ const Support = () => {
 
       const { PublicKey, Transaction, SystemProgram, Connection } = await import("@solana/web3.js");
 
-      const connection = new Connection("https://api.mainnet-beta.solana.com", "confirmed");
+      const connection = new Connection("https://rpc.helius.xyz/?api-key=1d8740dc-e5f4-421c-b823-e1bad1889eff", "confirmed");
       const fromPubkey = provider.publicKey;
       const toPubkey = new PublicKey(RECIPIENT_WALLET);
       const lamports = Math.round(activeAmount * LAMPORTS_PER_SOL);
