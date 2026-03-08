@@ -326,7 +326,7 @@ const PersonalizedIntelligence = () => {
 
             {/* Sections */}
             <div className="space-y-4">
-              {report.map((section, i) => (
+              {reporeport.map((section, i) => (
                 <motion.div
                   key={section.title}
                   initial={{ opacity: 0, x: 20 }}
@@ -372,7 +372,7 @@ const PersonalizedIntelligence = () => {
             </div>
 
             {/* Regenerate */}
-            {revealedSections >= mockrt.length && (
+            {revealedSectionsrepomockrt.length && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
