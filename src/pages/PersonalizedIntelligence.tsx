@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, RefreshCw } from "lucide-react";
+import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, RefreshCw, ClipboardList } from "lucide-react";
 import { Link } from "react-router-dom";
+
+interface CheckinAnswer {
+  question: string;
+  answer: string | number;
+  category: "mood" | "trading";
+}
 
 interface ReportSection {
   title: string;
