@@ -123,7 +123,7 @@ const WalletConnect = () => {
               onClick={connectPhantom}
               className="flex items-center gap-3 w-full px-4 py-3 text-sm font-display text-foreground hover:bg-accent transition-colors"
             >
-              <img src="https://phantom.app/img/phantom-icon-purple.svg" alt="Phantom" className="w-5 h-5" />
+              <svg className="w-5 h-5" viewBox="0 0 128 128" fill="none"><rect width="128" height="128" rx="26" fill="#AB9FF2"/><path d="M110.5 64.2c0-1-.8-1.8-1.8-1.8H97.5c-1 0-1.8.8-1.8 1.8 0 16.4-13.3 29.7-29.7 29.7S36.3 80.6 36.3 64.2c0-16.4 13.3-29.7 29.7-29.7 7.5 0 14.3 2.8 19.5 7.3.7.6 1.8.5 2.4-.2l7.9-9.4c.6-.7.5-1.8-.2-2.4C87.8 23 77.5 19 66 19 41.1 19 20.8 39.3 20.8 64.2S41.1 109.4 66 109.4s45.2-20.3 45.2-45.2h-.7z" fill="#fff"/><circle cx="44.5" cy="58" r="5.5" fill="#fff"/><circle cx="66" cy="58" r="5.5" fill="#fff"/></svg>
               Phantom (Solana)
             </button>
             <div className="border-t border-border" />
@@ -131,7 +131,7 @@ const WalletConnect = () => {
               onClick={connectMetaMask}
               className="flex items-center gap-3 w-full px-4 py-3 text-sm font-display text-foreground hover:bg-accent transition-colors"
             >
-              <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask" className="w-5 h-5" />
+              <svg className="w-5 h-5" viewBox="0 0 35 33" fill="none"><path d="M32.96 1l-13.14 9.72 2.45-5.73L32.96 1z" fill="#E2761B" stroke="#E2761B" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.66 1l13.02 9.81L13.35 4.99 2.66 1zm25.57 22.53l-3.5 5.34 7.49 2.06 2.14-7.28-6.13-.12zm-26.96.12l2.13 7.28 7.47-2.06-3.48-5.34-6.12.12z" fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.47 14.51l-2.08 3.14 7.4.34-.24-7.97-5.08 4.49zm14.68 0l-5.16-4.58-.17 8.06 7.4-.34-2.07-3.14zm-14.36 14.02l4.46-2.16-3.86-3.01-.6 5.17zm9.71-2.16l4.49 2.16-.63-5.17-3.86 3.01z" fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round"/></svg>
               MetaMask (EVM)
             </button>
           </motion.div>
