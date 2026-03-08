@@ -133,10 +133,15 @@ const Index = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-display mb-6">
+          <a
+            href="https://t.me/mindflow"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-display mb-6 hover:bg-primary/10 transition-colors cursor-pointer"
+          >
             <Users className="w-3 h-3" />
             Join the Movement
-          </div>
+          </a>
           <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">
             A Community That <span className="text-primary">Feels Together</span>
           </h2>
