@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Brain, Shield, BarChart3, Users, MessageCircle, TrendingUp, Heart, Star, Globe, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Brain, Shield, BarChart3, Users, MessageCircle, TrendingUp, Heart, Star, Globe, Zap, Menu, X } from "lucide-react";
 import AvatarOrb from "@/components/AvatarOrb";
 import ChatInterface from "@/components/ChatInterface";
 import WalletConnect from "@/components/WalletConnect";
 
 const Index = () => {
   const [chatOpen, setChatOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -44,8 +45,37 @@ const Index = () => {
           <a href="/support" className="hover:text-foreground transition-colors text-primary">Support ☕</a>
         </nav>
 
-        <WalletConnect />
+        <div className="flex items-center gap-3">
+          <WalletConnect />
+          <button
+            className="md:hidden p-2 rounded-lg border border-border bg-card/60 text-foreground"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </header>
+
+      {/* Mobile Nav */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.nav
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="relative z-20 md:hidden border-b border-border bg-card/80 backdrop-blur-md overflow-hidden"
+          >
+            <div className="flex flex-col gap-1 px-6 py-4 text-sm font-body">
+              <a href="/features" className="py-2 text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMenuOpen(false)}>Features</a>
+              <a href="/emotional-ai" className="py-2 text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMenuOpen(false)}>Emotional AI</a>
+              <a href="/personalized-intelligence" className="py-2 text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMenuOpen(false)}>Intelligence</a>
+              <a href="#community" className="py-2 text-muted-foreground hover:text-foreground transition-colors" onClick={() => setMenuOpen(false)}>Community</a>
+              <a href="/support" className="py-2 text-primary hover:text-primary/80 transition-colors" onClick={() => setMenuOpen(false)}>Support ☕</a>
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-12 md:pt-20 pb-16">
