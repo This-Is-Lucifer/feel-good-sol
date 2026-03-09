@@ -7,6 +7,7 @@ import WalletConnect from "@/components/WalletConnect";
 
 const Index = () => {
   const [chatOpen, setChatOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
