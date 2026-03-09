@@ -107,16 +107,30 @@ const ChatInterface = () => {
     setIsListening(false);
   }, []);
 
-  // Text-to-Speech
-  const speakText = useCallback((text: string) => {
-    if (!ttsEnabled) return;
+  // Text-to-Speech for a specific message
+  const speakMessage = useCallback((msgId: string, text: string) => {
+    // If already speaking this message, stop it
+    if (speakingId === msgId) {
+      window.speechSynthesis.cancel();
+      setSpeakingId(null);
+      return;
+    }
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
+    const plainText = text.replace(/[#*_~`>]/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    const utterance = new SpeechSynthesisUtterance(plainText);
     utterance.rate = 1;
     utterance.pitch = 1;
     utterance.lang = "en-US";
+    utterance.onend = () => setSpeakingId(null);
+    utterance.onerror = () => setSpeakingId(null);
+    setSpeakingId(msgId);
     window.speechSynthesis.speak(utterance);
-  }, [ttsEnabled]);
+  }, [speakingId]);
+
+  // Auto-speak assistant responses
+  const speakText = useCallback((text: string, msgId: string) => {
+    speakMessage(msgId, text);
+  }, [speakMessage]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
