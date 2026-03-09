@@ -36,10 +36,39 @@ const ChatInterface = () => {
   }, [messages]);
 
   // Speech-to-Text setup
-  const startListening = useCallback(() => {
+  const startListening = useCallback(async () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      console.error("Speech recognition not supported");
+      toast({ variant: "destructive", title: "Not Supported", description: "Speech recognition is not supported in this browser." });
+      return;
+    }
+
+    // Check microphone permission first
+    try {
+      const permissionStatus = await navigator.permissions.query({ name: "microphone" as PermissionName });
+      if (permissionStatus.state === "denied") {
+        setMicDenied(true);
+        toast({
+          variant: "destructive",
+          title: "Microphone Blocked",
+          description: "Microphone access was denied. Click the lock/site-settings icon in your browser's address bar to allow microphone access, then try again.",
+        });
+        return;
+      }
+    } catch {
+      // permissions API may not be available, proceed anyway
+    }
+
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMicDenied(false);
+    } catch {
+      setMicDenied(true);
+      toast({
+        variant: "destructive",
+        title: "Microphone Blocked",
+        description: "Microphone access was denied. Click the lock/site-settings icon in your browser's address bar to allow microphone access, then try again.",
+      });
       return;
     }
 
@@ -56,12 +85,22 @@ const ChatInterface = () => {
     };
 
     recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+    recognition.onerror = (e: any) => {
+      setIsListening(false);
+      if (e.error === "not-allowed") {
+        setMicDenied(true);
+        toast({
+          variant: "destructive",
+          title: "Microphone Blocked",
+          description: "Microphone access was denied. Click the lock/site-settings icon in your browser's address bar to allow it.",
+        });
+      }
+    };
 
     recognition.start();
     recognitionRef.current = recognition;
     setIsListening(true);
-  }, []);
+  }, [toast]);
 
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();
