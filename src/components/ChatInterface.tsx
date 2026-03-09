@@ -27,6 +27,7 @@ const ChatInterface = () => {
   const [micDenied, setMicDenied] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const speakingIdRef = useRef<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -110,8 +111,9 @@ const ChatInterface = () => {
   // Text-to-Speech for a specific message
   const speakMessage = useCallback((msgId: string, text: string) => {
     // If already speaking this message, stop it
-    if (speakingId === msgId) {
+    if (speakingIdRef.current === msgId) {
       window.speechSynthesis.cancel();
+      speakingIdRef.current = null;
       setSpeakingId(null);
       return;
     }
@@ -121,16 +123,12 @@ const ChatInterface = () => {
     utterance.rate = 1;
     utterance.pitch = 1;
     utterance.lang = "en-US";
-    utterance.onend = () => setSpeakingId(null);
-    utterance.onerror = () => setSpeakingId(null);
+    utterance.onend = () => { speakingIdRef.current = null; setSpeakingId(null); };
+    utterance.onerror = () => { speakingIdRef.current = null; setSpeakingId(null); };
+    speakingIdRef.current = msgId;
     setSpeakingId(msgId);
     window.speechSynthesis.speak(utterance);
-  }, [speakingId]);
-
-  // Auto-speak assistant responses
-  const speakText = useCallback((text: string, msgId: string) => {
-    speakMessage(msgId, text);
-  }, [speakMessage]);
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -166,7 +164,7 @@ const ChatInterface = () => {
         content: aiText,
       };
       setMessages((prev) => [...prev, aiMsg]);
-      speakText(aiText, aiMsg.id);
+      speakMessage(aiMsg.id, aiText);
     } catch (err) {
       console.error("Chat AI error:", err);
       const fallback = "I'm having trouble connecting right now. Please try again in a moment. 🙏";
