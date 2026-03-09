@@ -111,8 +111,9 @@ const ChatInterface = () => {
   // Text-to-Speech for a specific message
   const speakMessage = useCallback((msgId: string, text: string) => {
     // If already speaking this message, stop it
-    if (speakingId === msgId) {
+    if (speakingIdRef.current === msgId) {
       window.speechSynthesis.cancel();
+      speakingIdRef.current = null;
       setSpeakingId(null);
       return;
     }
@@ -122,16 +123,12 @@ const ChatInterface = () => {
     utterance.rate = 1;
     utterance.pitch = 1;
     utterance.lang = "en-US";
-    utterance.onend = () => setSpeakingId(null);
-    utterance.onerror = () => setSpeakingId(null);
+    utterance.onend = () => { speakingIdRef.current = null; setSpeakingId(null); };
+    utterance.onerror = () => { speakingIdRef.current = null; setSpeakingId(null); };
+    speakingIdRef.current = msgId;
     setSpeakingId(msgId);
     window.speechSynthesis.speak(utterance);
-  }, [speakingId]);
-
-  // Auto-speak assistant responses
-  const speakText = useCallback((text: string, msgId: string) => {
-    speakMessage(msgId, text);
-  }, [speakMessage]);
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
