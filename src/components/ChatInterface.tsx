@@ -27,6 +27,7 @@ const ChatInterface = () => {
   const [micDenied, setMicDenied] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const speakingIdRef = useRef<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
