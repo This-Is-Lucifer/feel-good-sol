@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Loader2, Trash2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -23,8 +24,10 @@ const ChatInterface = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(true);
+  const [micDenied, setMicDenied] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -33,10 +36,39 @@ const ChatInterface = () => {
   }, [messages]);
 
   // Speech-to-Text setup
-  const startListening = useCallback(() => {
+  const startListening = useCallback(async () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      console.error("Speech recognition not supported");
+      toast({ variant: "destructive", title: "Not Supported", description: "Speech recognition is not supported in this browser." });
+      return;
+    }
+
+    // Check microphone permission first
+    try {
+      const permissionStatus = await navigator.permissions.query({ name: "microphone" as PermissionName });
+      if (permissionStatus.state === "denied") {
+        setMicDenied(true);
+        toast({
+          variant: "destructive",
+          title: "Microphone Blocked",
+          description: "Microphone access was denied. Click the lock/site-settings icon in your browser's address bar to allow microphone access, then try again.",
+        });
+        return;
+      }
+    } catch {
+      // permissions API may not be available, proceed anyway
+    }
+
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMicDenied(false);
+    } catch {
+      setMicDenied(true);
+      toast({
+        variant: "destructive",
+        title: "Microphone Blocked",
+        description: "Microphone access was denied. Click the lock/site-settings icon in your browser's address bar to allow microphone access, then try again.",
+      });
       return;
     }
 
@@ -53,12 +85,22 @@ const ChatInterface = () => {
     };
 
     recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+    recognition.onerror = (e: any) => {
+      setIsListening(false);
+      if (e.error === "not-allowed") {
+        setMicDenied(true);
+        toast({
+          variant: "destructive",
+          title: "Microphone Blocked",
+          description: "Microphone access was denied. Click the lock/site-settings icon in your browser's address bar to allow it.",
+        });
+      }
+    };
 
     recognition.start();
     recognitionRef.current = recognition;
     setIsListening(true);
-  }, []);
+  }, [toast]);
 
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();
@@ -140,7 +182,12 @@ const ChatInterface = () => {
         </span>
         <span className="text-sm font-display font-medium text-foreground/80">MindFlow AI</span>
         <button
-          onClick={() => setTtsEnabled(!ttsEnabled)}
+          onClick={() => {
+            const next = !ttsEnabled;
+            setTtsEnabled(next);
+            if (!next) window.speechSynthesis.cancel();
+            toast({ title: next ? "Voice enabled 🔊" : "Voice muted 🔇" });
+          }}
           className="p-1 rounded-md hover:bg-secondary/50 text-muted-foreground hover:text-foreground transition-colors ml-auto"
           title={ttsEnabled ? "Mute voice" : "Unmute voice"}
         >
