@@ -262,7 +262,7 @@ const PersonalizedIntelligence = () => {
       : "No check-in data available.";
 
     try {
-      const response = await fetch("https://e975-119-42-59-192.ngrok-free.app/api/ollama", {
+      const response = await fetch("https://308e-119-42-59-192.ngrok-free.app/api/ollama", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
