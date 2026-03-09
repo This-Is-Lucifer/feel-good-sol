@@ -228,7 +228,7 @@ const ChatInterface = () => {
               className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                className={`max-w-[80%] group relative px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                   msg.role === "user"
                     ? "bg-primary text-primary-foreground rounded-br-md"
                     : "bg-secondary text-secondary-foreground rounded-bl-md"
@@ -239,6 +239,20 @@ const ChatInterface = () => {
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
                 )}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    speakMessage(msg.id, msg.content);
+                  }}
+                  className={`absolute -bottom-1 ${msg.role === "user" ? "-left-7" : "-right-7"} p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ${
+                    speakingId === msg.id
+                      ? "opacity-100 text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  title={speakingId === msg.id ? "Stop reading" : "Read aloud"}
+                >
+                  {speakingId === msg.id ? <Volume2 className="w-3.5 h-3.5 animate-pulse" /> : <Volume2 className="w-3.5 h-3.5" />}
+                </button>
               </div>
             </motion.div>
           ))}
