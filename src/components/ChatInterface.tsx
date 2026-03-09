@@ -164,7 +164,7 @@ const ChatInterface = () => {
         content: aiText,
       };
       setMessages((prev) => [...prev, aiMsg]);
-      speakText(aiText, aiMsg.id);
+      speakMessage(aiMsg.id, aiText);
     } catch (err) {
       console.error("Chat AI error:", err);
       const fallback = "I'm having trouble connecting right now. Please try again in a moment. 🙏";
