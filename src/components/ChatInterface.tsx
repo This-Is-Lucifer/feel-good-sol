@@ -23,7 +23,7 @@ const ChatInterface = () => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const [ttsEnabled, setTtsEnabled] = useState(true);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [micDenied, setMicDenied] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -107,16 +107,30 @@ const ChatInterface = () => {
     setIsListening(false);
   }, []);
 
-  // Text-to-Speech
-  const speakText = useCallback((text: string) => {
-    if (!ttsEnabled) return;
+  // Text-to-Speech for a specific message
+  const speakMessage = useCallback((msgId: string, text: string) => {
+    // If already speaking this message, stop it
+    if (speakingId === msgId) {
+      window.speechSynthesis.cancel();
+      setSpeakingId(null);
+      return;
+    }
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
+    const plainText = text.replace(/[#*_~`>]/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    const utterance = new SpeechSynthesisUtterance(plainText);
     utterance.rate = 1;
     utterance.pitch = 1;
     utterance.lang = "en-US";
+    utterance.onend = () => setSpeakingId(null);
+    utterance.onerror = () => setSpeakingId(null);
+    setSpeakingId(msgId);
     window.speechSynthesis.speak(utterance);
-  }, [ttsEnabled]);
+  }, [speakingId]);
+
+  // Auto-speak assistant responses
+  const speakText = useCallback((text: string, msgId: string) => {
+    speakMessage(msgId, text);
+  }, [speakMessage]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -152,7 +166,7 @@ const ChatInterface = () => {
         content: aiText,
       };
       setMessages((prev) => [...prev, aiMsg]);
-      speakText(aiText);
+      speakText(aiText, aiMsg.id);
     } catch (err) {
       console.error("Chat AI error:", err);
       const fallback = "I'm having trouble connecting right now. Please try again in a moment. 🙏";
@@ -183,15 +197,14 @@ const ChatInterface = () => {
         <span className="text-sm font-display font-medium text-foreground/80">MindFlow AI</span>
         <button
           onClick={() => {
-            const next = !ttsEnabled;
-            setTtsEnabled(next);
-            if (!next) window.speechSynthesis.cancel();
-            toast({ title: next ? "Voice enabled 🔊" : "Voice muted 🔇" });
+            window.speechSynthesis.cancel();
+            setSpeakingId(null);
+            toast({ title: "Speech stopped 🔇" });
           }}
           className="p-1 rounded-md hover:bg-secondary/50 text-muted-foreground hover:text-foreground transition-colors ml-auto"
-          title={ttsEnabled ? "Mute voice" : "Unmute voice"}
+          title="Stop speaking"
         >
-          {ttsEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+          {speakingId ? <Volume2 className="w-3.5 h-3.5 text-primary animate-pulse" /> : <Volume2 className="w-3.5 h-3.5" />}
         </button>
         <button
           onClick={handleClear}
@@ -215,7 +228,7 @@ const ChatInterface = () => {
               className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                className={`max-w-[80%] group relative px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                   msg.role === "user"
                     ? "bg-primary text-primary-foreground rounded-br-md"
                     : "bg-secondary text-secondary-foreground rounded-bl-md"
@@ -226,6 +239,20 @@ const ChatInterface = () => {
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
                 )}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    speakMessage(msg.id, msg.content);
+                  }}
+                  className={`absolute -bottom-1 ${msg.role === "user" ? "-left-7" : "-right-7"} p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ${
+                    speakingId === msg.id
+                      ? "opacity-100 text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  title={speakingId === msg.id ? "Stop reading" : "Read aloud"}
+                >
+                  {speakingId === msg.id ? <Volume2 className="w-3.5 h-3.5 animate-pulse" /> : <Volume2 className="w-3.5 h-3.5" />}
+                </button>
               </div>
             </motion.div>
           ))}
