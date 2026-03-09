@@ -197,15 +197,14 @@ const ChatInterface = () => {
         <span className="text-sm font-display font-medium text-foreground/80">MindFlow AI</span>
         <button
           onClick={() => {
-            const next = !ttsEnabled;
-            setTtsEnabled(next);
-            if (!next) window.speechSynthesis.cancel();
-            toast({ title: next ? "Voice enabled 🔊" : "Voice muted 🔇" });
+            window.speechSynthesis.cancel();
+            setSpeakingId(null);
+            toast({ title: "Speech stopped 🔇" });
           }}
           className="p-1 rounded-md hover:bg-secondary/50 text-muted-foreground hover:text-foreground transition-colors ml-auto"
-          title={ttsEnabled ? "Mute voice" : "Unmute voice"}
+          title="Stop speaking"
         >
-          {ttsEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+          {speakingId ? <Volume2 className="w-3.5 h-3.5 text-primary animate-pulse" /> : <Volume2 className="w-3.5 h-3.5" />}
         </button>
         <button
           onClick={handleClear}
