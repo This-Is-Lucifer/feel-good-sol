@@ -104,10 +104,10 @@ const Support = () => {
             <Heart className="w-8 h-8 text-primary" />
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">
-            Support <span className="text-primary">MindFlow</span>
+            Support <span className="text-primary">MindFi</span>
           </h1>
           <p className="text-muted-foreground font-body text-sm md:text-base max-w-md mx-auto">
-            Help us keep MindFlow free and accessible for every trader. Your SOL donation fuels development and community growth.
+            Help us keep MindFi free and accessible for every trader. Your SOL donation fuels development and community growth.
           </p>
         </div>
 
@@ -202,3 +202,4 @@ const Support = () => {
 };
 
 export default Support;
+

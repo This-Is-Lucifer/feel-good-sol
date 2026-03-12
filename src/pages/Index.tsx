@@ -34,7 +34,7 @@ const Index = () => {
           <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
             <Brain className="w-5 h-5 text-primary" />
           </div>
-          <span className="font-display font-semibold text-lg text-foreground">MindFlow</span>
+          <span className="font-display font-semibold text-lg text-foreground">MindFi</span>
         </div>
 
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground font-body">
@@ -175,7 +175,7 @@ const Index = () => {
           className="text-center mb-16"
         >
           <a
-            href="https://t.me/mindflow"
+            href="https://t.me/MindFi"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-display mb-6 hover:bg-primary/10 transition-colors cursor-pointer"
@@ -225,7 +225,7 @@ const Index = () => {
             {
               name: "Alex K.",
               role: "DeFi Trader",
-              quote: "MindFlow caught my panic-selling pattern before I even noticed it. Saved me from a $14k loss during the last dip.",
+              quote: "MindFi caught my panic-selling pattern before I even noticed it. Saved me from a $14k loss during the last dip.",
               rating: 5,
             },
             {
@@ -310,7 +310,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="relative z-10 border-t border-border py-8 px-6 text-center">
         <p className="text-xs text-muted-foreground font-body">
-          © 2026 MindFlow. Built on Solana. Your wellness, decentralized.
+          © 2026 MindFi. Built on Solana. Your wellness, decentralized.
         </p>
       </footer>
     </div>
@@ -318,3 +318,4 @@ const Index = () => {
 };
 
 export default Index;
+

@@ -25,7 +25,7 @@ const AvatarOrb = ({ isSpeaking = false, onClick }: AvatarOrbProps) => {
           <div className="w-full h-full rounded-full bg-card overflow-hidden flex items-center justify-center">
             <motion.img
               src={avatarImg}
-              alt="MindFlow AI Avatar"
+              alt="MindFi AI Avatar"
               className="w-full h-full object-cover"
               animate={isSpeaking ? {
                 scale: [1, 1.02, 1],
@@ -48,3 +48,4 @@ const AvatarOrb = ({ isSpeaking = false, onClick }: AvatarOrbProps) => {
 };
 
 export default AvatarOrb;
+

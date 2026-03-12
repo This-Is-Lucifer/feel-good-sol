@@ -258,10 +258,10 @@ const EmotionalAI = () => {
       const savedData = questions
         .filter((q) => q.type !== "camera")
         .map((q) => ({ question: q.text, answer: answers[q.id] ?? "—", category: q.category }));
-      localStorage.setItem("mindflow_checkin", JSON.stringify(savedData));
+      localStorage.setItem("MindFi_checkin", JSON.stringify(savedData));
       // Save captured image if available
       if (capturedImage) {
-        localStorage.setItem("mindflow_selfie", capturedImage);
+        localStorage.setItem("MindFi_selfie", capturedImage);
       }
     }
   };
@@ -286,7 +286,7 @@ const EmotionalAI = () => {
           <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
             <Brain className="w-5 h-5 text-primary" />
           </div>
-          <span className="font-display font-semibold text-lg text-foreground">MindFlow</span>
+          <span className="font-display font-semibold text-lg text-foreground">MindFi</span>
         </Link>
       </header>
 
@@ -555,3 +555,4 @@ const EmotionalAI = () => {
 };
 
 export default EmotionalAI;
+

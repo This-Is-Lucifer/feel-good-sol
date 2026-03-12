@@ -19,7 +19,7 @@ const currentFeatures: Feature[] = [
   {
     icon: Mic,
     title: "Voice Input & Read Aloud",
-    description: "Speak to MindFlow using your microphone and hear AI responses read aloud — hands-free emotional support while you trade.",
+    description: "Speak to MindFi using your microphone and hear AI responses read aloud — hands-free emotional support while you trade.",
   },
   {
     icon: Camera,
@@ -47,7 +47,7 @@ const currentFeatures: Feature[] = [
   {
     icon: Heart,
     title: "SOL Donation Support",
-    description: "Support MindFlow directly through Phantom wallet with preset or custom SOL amounts, QR code, and copy-to-clipboard.",
+    description: "Support MindFi directly through Phantom wallet with preset or custom SOL amounts, QR code, and copy-to-clipboard.",
     link: "/support",
   },
   {
@@ -80,7 +80,7 @@ const upcomingFeatures: UpcomingFeature[] = [
   {
     icon: Globe,
     title: "Community Mood Heatmap",
-    description: "Anonymous, aggregated emotional pulse of the MindFlow community — see how the collective feels about the market.",
+    description: "Anonymous, aggregated emotional pulse of the MindFi community — see how the collective feels about the market.",
     eta: "Q4 2026",
   },
   {
@@ -98,7 +98,7 @@ const upcomingFeatures: UpcomingFeature[] = [
   {
     icon: Zap,
     title: "Telegram & Discord Bot",
-    description: "Access MindFlow's wellness companion directly from your favorite trading communities with inline check-ins and alerts.",
+    description: "Access MindFi's wellness companion directly from your favorite trading communities with inline check-ins and alerts.",
     eta: "Q1 2027",
   },
 ];
@@ -128,7 +128,7 @@ const Features = () => {
           <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
             <Brain className="w-5 h-5 text-primary" />
           </div>
-          <span className="font-display font-semibold text-lg text-foreground">MindFlow</span>
+          <span className="font-display font-semibold text-lg text-foreground">MindFi</span>
         </Link>
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
@@ -166,7 +166,7 @@ const Features = () => {
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
             Live Features
           </h2>
-          <p className="text-muted-foreground font-body text-sm mb-8">Available now on MindFlow</p>
+          <p className="text-muted-foreground font-body text-sm mb-8">Available now on MindFi</p>
 
           <motion.div
             variants={container}
@@ -252,7 +252,7 @@ const Features = () => {
         >
           <p className="text-muted-foreground font-body text-sm mb-4">Want to shape what we build next?</p>
           <a
-            href="https://t.me/mindflow"
+            href="https://t.me/MindFi"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-display font-semibold text-sm hover:opacity-90 transition-opacity"
@@ -266,3 +266,4 @@ const Features = () => {
 };
 
 export default Features;
+

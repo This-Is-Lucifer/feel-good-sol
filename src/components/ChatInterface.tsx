@@ -13,10 +13,10 @@ interface Message {
 const INITIAL_MESSAGE: Message = {
   id: "welcome",
   role: "assistant",
-  content: "Hey there 👋 I'm MindFlow — your crypto wellness companion. How are you feeling about the markets today?",
+  content: "Hey there 👋 I'm MindFi — your crypto wellness companion. How are you feeling about the markets today?",
 };
 
-const SYSTEM_MESSAGE = "You are MindFlow, an empathetic and supportive AI assistant for crypto traders. Your role is to help users manage stress, anxiety, and emotional decision-making while trading. Provide concise, practical guidance, stay understanding and calm, and tailor responses to the user's emotional state and trading context. Keep your tone conversational, friendly, and encouraging.";
+const SYSTEM_MESSAGE = "You are MindFi, an empathetic and supportive AI assistant for crypto traders. Your role is to help users manage stress, anxiety, and emotional decision-making while trading. Provide concise, practical guidance, stay understanding and calm, and tailor responses to the user's emotional state and trading context. Keep your tone conversational, friendly, and encouraging.";
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
@@ -192,7 +192,7 @@ const ChatInterface = () => {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
         </span>
-        <span className="text-sm font-display font-medium text-foreground/80">MindFlow AI</span>
+        <span className="text-sm font-display font-medium text-foreground/80">MindFi AI</span>
         <button
           onClick={() => {
             window.speechSynthesis.cancel();
@@ -306,3 +306,4 @@ const ChatInterface = () => {
 };
 
 export default ChatInterface;
+
