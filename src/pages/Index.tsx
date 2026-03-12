@@ -16,7 +16,7 @@ const Index = () => {
         <div className="flex w-max animate-[marquee_20s_linear_infinite]">
           {[0, 1].map((i) => (
             <span key={i} className="text-xs font-display text-primary tracking-wide mx-[50vw] shrink-0">
-              ⚠️ Only Compatible with Desktop Screens
+              ⚠️ Stay Tuned!! We are going live today with our beta Launch.
             </span>
           ))}
         </div>

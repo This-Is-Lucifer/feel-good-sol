@@ -48,7 +48,7 @@ const Support = () => {
       const { PublicKey, Transaction, SystemProgram, Connection } = await import("@solana/web3.js");
 
       // Use Phantom's own connection to avoid public RPC CORS/rate-limit issues
-      const connection = new Connection("https://api.mainnet-beta.solana.com", "confirmed");
+      const connection = new Connection("https://solana-mainnet.g.alchemy.com/v2/9dnjvMBlE9hkLm27RmtnN", "confirmed");
       const fromPubkey = provider.publicKey;
       const toPubkey = new PublicKey(RECIPIENT_WALLET);
       const lamports = Math.round(activeAmount * LAMPORTS_PER_SOL);
