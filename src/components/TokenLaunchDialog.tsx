@@ -37,6 +37,8 @@ async function launchToken(
     twitter: string;
     telegram: string;
     website: string;
+    initialBuy: number;
+    slippage: number;
   },
   imageFile: File
 ) {
