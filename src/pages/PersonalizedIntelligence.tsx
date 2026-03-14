@@ -298,6 +298,30 @@ const PersonalizedIntelligence = () => {
     toast({ title: "PDF Downloaded", description: "Your report has been saved." });
   };
 
+  const analyzeEmotion = async (imageBase64: string) => {
+    setAnalyzingEmotion(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-emotion", {
+        body: { imageBase64 },
+      });
+
+      if (error) throw error;
+
+      if (data?.emotions) {
+        setEmotionAnalysis(data as EmotionAnalysis);
+      }
+    } catch (err) {
+      console.error("Emotion analysis failed:", err);
+      toast({
+        title: "Emotion analysis unavailable",
+        description: "Using default values. Try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setAnalyzingEmotion(false);
+    }
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem("MindFi_checkin");
     if (saved) {
@@ -306,6 +330,7 @@ const PersonalizedIntelligence = () => {
     const savedSelfie = localStorage.getItem("MindFi_selfie");
     if (savedSelfie) {
       setSelfieImage(savedSelfie);
+      analyzeEmotion(savedSelfie);
     }
   }, []);
 
