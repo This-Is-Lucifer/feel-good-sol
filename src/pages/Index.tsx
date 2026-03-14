@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AvatarOrb from "@/components/AvatarOrb";
 import ChatInterface from "@/components/ChatInterface";
 import WalletConnect from "@/components/WalletConnect";
+import MyDeployments from "@/components/MyDeployments";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 
@@ -161,6 +162,7 @@ const Index = () => {
               <p className="font-display text-3xl font-bold text-primary">{deploymentCount ?? "—"}</p>
             </div>
           </Link>
+          <MyDeployments />
         </motion.div>
 
         {/* Launch My Token — Platinum Dialog */}
