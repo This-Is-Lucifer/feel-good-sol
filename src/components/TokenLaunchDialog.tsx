@@ -9,9 +9,12 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Connection, VersionedTransaction, Keypair } from "@solana/web3.js";
+import { supabase } from "@/integrations/supabase/client";
 
 const RPC_ENDPOINT = "https://api.mainnet-beta.solana.com";
 const connection = new Connection(RPC_ENDPOINT, "confirmed");
+
+const PUMP_PROXY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/pump-proxy`;
 
 interface TokenLaunchDialogProps {
   open: boolean;
@@ -59,7 +62,7 @@ async function launchToken(
   formData.append("website", formValues.website);
   formData.append("showName", "true");
 
-  const metadataResponse = await fetch("https://pump.fun/api/ipfs", {
+  const metadataResponse = await fetch(`${PUMP_PROXY_URL}?action=ipfs`, {
     method: "POST",
     body: formData,
   });
@@ -72,7 +75,7 @@ async function launchToken(
   console.log("Metadata uploaded:", metadata);
 
   // 4. Request create transaction from PumpPortal
-  const response = await fetch("https://pumpportal.fun/api/trade-local", {
+  const response = await fetch(`${PUMP_PROXY_URL}?action=trade`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
