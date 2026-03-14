@@ -252,7 +252,7 @@ const Features = () => {
         >
           <p className="text-muted-foreground font-body text-sm mb-4">Want to shape what we build next?</p>
           <a
-            href="https://t.me/MindFi"
+            href="https://x.com/mindfiai"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-display font-semibold text-sm hover:opacity-90 transition-opacity"
