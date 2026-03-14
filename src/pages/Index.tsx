@@ -158,7 +158,7 @@ const Index = () => {
                 <Rocket className="w-5 h-5 text-primary" />
               </div>
               <p className="font-display font-semibold text-foreground">Total MindFi Token Deployments</p>
-              <p className="font-display text-3xl font-bold text-primary">1</p>
+              <p className="font-display text-3xl font-bold text-primary">{deploymentCount ?? "—"}</p>
             </div>
           </Link>
         </motion.div>
