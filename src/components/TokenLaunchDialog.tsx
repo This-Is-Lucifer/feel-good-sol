@@ -311,18 +311,25 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-display font-medium text-muted-foreground mb-1 block">
-                Initial Dev Buy (SOL)
-              </label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <label className="text-xs font-display font-medium text-muted-foreground mb-1 flex items-center gap-1 cursor-help">
+                      Initial Dev Buy (SOL)
+                      <Lock className="w-3 h-3 text-muted-foreground/50" />
+                    </label>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs">
+                    Only for Platinum Supporters
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <input
-                value={initialBuy}
-                onChange={(e) => setInitialBuy(e.target.value)}
+                value="0"
                 placeholder="0"
                 type="number"
-                min="0"
-                step="0.1"
-                className={inputClass}
-                disabled={launching}
+                className={`${inputClass} opacity-50 cursor-not-allowed`}
+                disabled
               />
             </div>
             <div>
