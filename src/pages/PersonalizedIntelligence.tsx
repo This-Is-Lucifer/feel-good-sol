@@ -383,15 +383,21 @@ const PersonalizedIntelligence = () => {
                 <Camera className="w-4 h-4 text-primary" />
                 <h2 className="font-display font-semibold text-sm text-foreground">Facial Emotion Analysis</h2>
               </div>
-              {walletConnected && (
-                <button
-                  onClick={() => setShowTokenDialog(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-primary/30 bg-primary/10 text-primary font-display font-semibold text-xs hover:bg-primary/20 transition-colors"
-                >
-                  <Rocket className="w-3.5 h-3.5" />
-                  Launch My Token
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  const provider = (window as any)?.phantom?.solana;
+                  if (!provider?.isPhantom || !provider?.publicKey) {
+                    toast({ title: "Wallet not connected", description: "Please connect your Phantom wallet on the home page first.", variant: "destructive" });
+                    return;
+                  }
+                  setShowTokenDialog(true);
+                }}
+                disabled={!walletConnected}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-primary/30 bg-primary/10 text-primary font-display font-semibold text-xs hover:bg-primary/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Rocket className="w-3.5 h-3.5" />
+                Launch My Token
+              </button>
             </div>
             <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
               {/* Selfie */}
