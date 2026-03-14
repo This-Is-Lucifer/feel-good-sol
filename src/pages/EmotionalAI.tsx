@@ -416,16 +416,9 @@ const EmotionalAI = () => {
 
                       {cameraError && (
                         <p className="text-xs text-destructive text-center">
-                          Camera access denied. Use the upload option or skip.
+                          Camera access denied. Please use the upload option.
                         </p>
                       )}
-
-                      <button
-                        onClick={next}
-                        className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
-                      >
-                        Skip this step
-                      </button>
                     </div>
                   )}
 
