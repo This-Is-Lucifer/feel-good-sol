@@ -423,48 +423,31 @@ const PersonalizedIntelligence = () => {
               <Brain className="w-4 h-4" />
               Generate My Report
             </button>
-            <button
-              onClick={() => setShowTokenDialog(true)}
-              className="flex items-center gap-2 px-8 py-3.5 rounded-xl border border-primary/30 bg-primary/10 text-primary font-display font-semibold text-sm hover:bg-primary/20 transition-colors"
-            >
-              <Rocket className="w-4 h-4" />
-              Launch My Token
-            </button>
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-block">
+                    <button
+                      onClick={() => setShowTokenDialog(true)}
+                      disabled={!walletConnected}
+                      className="flex items-center gap-2 px-8 py-3.5 rounded-xl border border-primary/30 bg-primary/10 text-primary font-display font-semibold text-sm hover:bg-primary/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Rocket className="w-4 h-4" />
+                      Launch My Token
+                    </button>
+                  </span>
+                </TooltipTrigger>
+                {!walletConnected && (
+                  <TooltipContent side="bottom" className="text-xs">
+                    Connect your Phantom wallet first
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           </motion.div>
         )}
 
-        {/* Launch My Token — Platinum Dialog */}
-        <Dialog open={showTokenDialog} onOpenChange={setShowTokenDialog}>
-          <DialogContent className="bg-card border-border max-w-md text-center">
-            <DialogHeader className="items-center">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-2">
-                <Crown className="w-7 h-7 text-primary" />
-              </div>
-              <DialogTitle className="font-display text-xl text-foreground">
-                Platinum Supporters Only
-              </DialogTitle>
-              <DialogDescription className="text-muted-foreground text-sm mt-2 leading-relaxed">
-                The <span className="text-primary font-semibold">Launch My Token</span> feature is exclusively available to <span className="text-primary font-semibold">Platinum Supporters</span> — those who have donated at least <span className="text-foreground font-semibold">1 SOL</span> to help grow the MindFi project.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-4 flex flex-col gap-3">
-              <Link
-                to="/support"
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-display font-semibold text-sm hover:bg-primary/90 transition-colors"
-                onClick={() => setShowTokenDialog(false)}
-              >
-                <Heart className="w-4 h-4" />
-                Become a Platinum Supporter
-              </Link>
-              <button
-                onClick={() => setShowTokenDialog(false)}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors font-display"
-              >
-                Maybe later
-              </button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <TokenLaunchDialog open={showTokenDialog} onOpenChange={setShowTokenDialog} />
 
         {/* Loading state */}
         {generating && (
