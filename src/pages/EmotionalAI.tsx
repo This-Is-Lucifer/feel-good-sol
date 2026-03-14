@@ -278,7 +278,6 @@ const EmotionalAI = () => {
     };
     reader.readAsDataURL(file);
   }, [analyzeEmotion]);
-  }, []);
 
   const retakePhoto = useCallback(() => {
     setCapturedImage(null);
