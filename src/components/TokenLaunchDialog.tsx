@@ -127,6 +127,8 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
   const [telegram, setTelegram] = useState("");
   const [website, setWebsite] = useState("");
   const [launching, setLaunching] = useState(false);
+  const [initialBuy, setInitialBuy] = useState("0");
+  const [slippage, setSlippage] = useState("10");
 
   const selfieImage = localStorage.getItem("MindFi_selfie");
 
