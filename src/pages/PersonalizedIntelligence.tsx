@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, RefreshCw, ClipboardList, Download } from "lucide-react";
+import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, RefreshCw, ClipboardList, Download, Rocket, Crown } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { jsPDF } from "jspdf";
