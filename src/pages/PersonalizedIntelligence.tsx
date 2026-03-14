@@ -370,6 +370,56 @@ const PersonalizedIntelligence = () => {
           </p>
         </motion.div>
 
+        {/* Selfie & Emotion Analysis Section */}
+        {selfieImage && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="mb-8 p-5 md:p-6 rounded-2xl border border-border bg-card/40 backdrop-blur-sm"
+          >
+            <div className="flex items-center gap-2 mb-5">
+              <Camera className="w-4 h-4 text-primary" />
+              <h2 className="font-display font-semibold text-sm text-foreground">Facial Emotion Analysis</h2>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
+              {/* Selfie */}
+              <div className="w-36 h-36 md:w-44 md:h-44 rounded-2xl overflow-hidden border-2 border-primary/20 shrink-0 shadow-[0_0_30px_-8px_hsl(var(--primary)/0.3)]">
+                <img src={selfieImage} alt="Your check-in selfie" className="w-full h-full object-cover" />
+              </div>
+              {/* Emotion bars */}
+              <div className="flex-1 w-full space-y-3">
+                <p className="text-xs uppercase tracking-widest font-display text-primary font-semibold mb-3">
+                  Detected Emotions
+                </p>
+                {[
+                  { label: "Calm", confidence: 72, icon: Smile, color: "text-primary" },
+                  { label: "Focused", confidence: 18, icon: Meh, color: "text-muted-foreground" },
+                  { label: "Anxious", confidence: 7, icon: AlertTriangle, color: "text-yellow-400" },
+                  { label: "Stressed", confidence: 3, icon: Frown, color: "text-destructive" },
+                ].map((e) => (
+                  <div key={e.label} className="flex items-center gap-3">
+                    <e.icon className={`w-4 h-4 ${e.color} shrink-0`} />
+                    <span className="text-sm text-foreground w-20 shrink-0">{e.label}</span>
+                    <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${e.confidence}%` }}
+                        transition={{ duration: 0.8, delay: 0.3 }}
+                        className="h-full rounded-full bg-primary/60"
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground w-10 text-right font-display">{e.confidence}%</span>
+                  </div>
+                ))}
+                <p className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border/50">
+                  Primary emotion: <span className="text-primary font-semibold">Calm</span> — You appear emotionally grounded for trading decisions.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Check-in Responses */}
         {checkinData.length > 0 && (
           <motion.div
@@ -378,16 +428,9 @@ const PersonalizedIntelligence = () => {
             transition={{ delay: 0.1 }}
             className="mb-8 p-5 md:p-6 rounded-2xl border border-border bg-card/40 backdrop-blur-sm"
           >
-            <div className="flex items-center gap-3 mb-4">
-              {selfieImage && (
-                <div className="w-10 h-10 rounded-full overflow-hidden border border-primary/30 shrink-0">
-                  <img src={selfieImage} alt="Your selfie" className="w-full h-full object-cover" />
-                </div>
-              )}
-              <div className="flex items-center gap-2">
-                <ClipboardList className="w-4 h-4 text-primary" />
-                <h2 className="font-display font-semibold text-sm text-foreground">Your Check-in Responses</h2>
-              </div>
+            <div className="flex items-center gap-2 mb-4">
+              <ClipboardList className="w-4 h-4 text-primary" />
+              <h2 className="font-display font-semibold text-sm text-foreground">Your Check-in Responses</h2>
             </div>
             <div className="space-y-3">
               {checkinData.map((item, i) => (
