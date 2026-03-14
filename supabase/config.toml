@@ -1,1 +1,4 @@
 project_id = "sqlawmoavrnmplfdxnqn"
+
+[functions.pump-proxy]
+verify_jwt = false
