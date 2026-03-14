@@ -446,18 +446,18 @@ const EmotionalAI = () => {
 
                   {!capturedImage && !cameraActive && (
                     <div className="flex flex-col items-center gap-4 w-full max-w-sm">
-                      {/* Primary: Open Camera */}
+                      {/* Primary: Open Camera (uses capture="user" file input) */}
                       <button
-                        onClick={startCamera}
+                        onClick={() => fileInputRef.current?.click()}
                         className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl border border-primary/30 bg-primary/10 text-primary text-sm font-display font-medium hover:bg-primary/15 transition-colors"
                       >
                         <Camera className="w-5 h-5" />
                         Open Camera
                       </button>
 
-                      {/* Fallback: Upload photo */}
+                      {/* Fallback: Upload photo (no capture attribute) */}
                       <button
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={() => uploadInputRef.current?.click()}
                         className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-secondary/50 text-foreground text-sm font-display font-medium hover:bg-secondary transition-colors"
                       >
                         <Upload className="w-4 h-4" />
