@@ -10,16 +10,8 @@ interface Message {
   content: string;
 }
 
-const INITIAL_MESSAGE: Message = {
-  id: "welcome",
-  role: "assistant",
-  content: "Hey there 👋 I'm MindFi — your crypto wellness companion. How are you feeling about the markets today?",
-};
-
-
-
 const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
