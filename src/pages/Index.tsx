@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import AvatarOrb from "@/components/AvatarOrb";
 import ChatInterface from "@/components/ChatInterface";
 import WalletConnect from "@/components/WalletConnect";
+import MyDeployments from "@/components/MyDeployments";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 
