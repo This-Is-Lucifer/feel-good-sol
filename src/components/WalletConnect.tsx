@@ -219,13 +219,6 @@ const WalletConnect = () => {
             animate={{ opacity: 1, y: 0 }}
             className="absolute right-0 top-full mt-2 z-[70] w-52 rounded-xl border border-border bg-card shadow-lg overflow-hidden"
           >
-            <button
-              onClick={switchWallet}
-              className="flex items-center gap-3 w-full px-4 py-3 text-sm font-display text-foreground hover:bg-primary/10 hover:text-primary active:bg-primary/20 transition-all cursor-pointer"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Switch Wallet
-            </button>
             <div className="border-t border-border" />
             <button
               onClick={handleDisconnect}

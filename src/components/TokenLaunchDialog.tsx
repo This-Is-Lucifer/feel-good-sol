@@ -11,7 +11,7 @@ import { toast } from "@/hooks/use-toast";
 import { Connection, VersionedTransaction, Keypair } from "@solana/web3.js";
 import { supabase } from "@/integrations/supabase/client";
 
-const RPC_ENDPOINT = "https://api.mainnet-beta.solana.com";
+const RPC_ENDPOINT = "https://solana-mainnet.g.alchemy.com/v2/9dnjvMBlE9hkLm27RmtnN";
 const connection = new Connection(RPC_ENDPOINT, "confirmed");
 
 const PUMP_PROXY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/pump-proxy`;
