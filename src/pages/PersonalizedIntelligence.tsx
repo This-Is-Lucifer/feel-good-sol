@@ -265,6 +265,10 @@ const PersonalizedIntelligence = () => {
     if (saved) {
       try { setCheckinData(JSON.parse(saved)); } catch { /* ignore */ }
     }
+    const savedSelfie = localStorage.getItem("MindFi_selfie");
+    if (savedSelfie) {
+      setSelfieImage(savedSelfie);
+    }
   }, []);
 
   const generateReport = async () => {
