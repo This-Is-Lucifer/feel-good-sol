@@ -111,11 +111,12 @@ async function launchToken(
   // 7. Phantom signs wallet part
   const signedTx = await provider.signTransaction(tx);
 
-  // 8. Send and confirm
-  const signature = await connection.sendRawTransaction(signedTx.serialize());
-  await connection.confirmTransaction(signature);
+  const signature = await connection.sendRawTransaction(signedTx.serialize(), {
+    skipPreflight: false,
+    maxRetries: 3,
+  });
 
-  console.log("Token created!", `https://solscan.io/tx/${signature}`);
+  console.log("Token tx sent!", `https://solscan.io/tx/${signature}`);
   return { signature, mint: mintKeypair.publicKey.toBase58() };
 }
 
