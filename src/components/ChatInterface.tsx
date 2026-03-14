@@ -16,7 +16,7 @@ const INITIAL_MESSAGE: Message = {
   content: "Hey there 👋 I'm MindFi — your crypto wellness companion. How are you feeling about the markets today?",
 };
 
-const SYSTEM_MESSAGE = "You are MindFi, an empathetic and supportive AI assistant for crypto traders. Your role is to help users manage stress, anxiety, and emotional decision-making while trading. Provide concise, practical guidance, stay understanding and calm, and tailor responses to the user's emotional state and trading context. Keep your tone conversational, friendly, and encouraging.";
+
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
@@ -139,41 +139,80 @@ const ChatInterface = () => {
       role: "user",
       content: userMessage,
     };
-    setMessages((prev) => [...prev, userMsg]);
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setInput("");
     setIsTyping(true);
 
     try {
-      const response = await fetch("https://308e-119-42-59-192.ngrok-free.app/api/ollama", {
+      const chatUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+      const resp = await fetch(chatUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
         body: JSON.stringify({
-          system: SYSTEM_MESSAGE,
-          prompt: userMessage,
+          messages: updatedMessages
+            .filter((m) => m.id !== "welcome")
+            .map((m) => ({ role: m.role, content: m.content })),
         }),
       });
 
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      if (!resp.ok || !resp.body) {
+        throw new Error(`API error: ${resp.status}`);
+      }
 
-      const data = await response.json();
-      const aiText = typeof data === "string" ? data : data.response || data.message?.content || "I'm here for you. Could you tell me more?";
+      const aiMsgId = (Date.now() + 1).toString();
+      let assistantText = "";
 
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: aiText,
-      };
-      setMessages((prev) => [...prev, aiMsg]);
-      speakMessage(aiMsg.id, aiText);
+      setMessages((prev) => [...prev, { id: aiMsgId, role: "assistant", content: "" }]);
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantText += content;
+              setMessages((prev) =>
+                prev.map((m) => (m.id === aiMsgId ? { ...m, content: assistantText } : m))
+              );
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Auto-speak the final response
+      if (assistantText) {
+        speakMessage(aiMsgId, assistantText);
+      }
     } catch (err) {
       console.error("Chat AI error:", err);
       const fallback = "I'm having trouble connecting right now. Please try again in a moment. 🙏";
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: fallback,
-      };
-      setMessages((prev) => [...prev, aiMsg]);
+      setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: "assistant", content: fallback }]);
     } finally {
       setIsTyping(false);
     }
