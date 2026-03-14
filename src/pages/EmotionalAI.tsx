@@ -435,6 +435,13 @@ const EmotionalAI = () => {
                     onChange={handleFileUpload}
                     className="hidden"
                   />
+                  <input
+                    ref={uploadInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
 
                   {!capturedImage && !cameraActive && (
                     <div className="flex flex-col items-center gap-4 w-full max-w-sm">
