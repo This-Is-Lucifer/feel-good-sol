@@ -88,7 +88,7 @@ async function launchToken(
       },
       mint: mintKeypair.publicKey.toBase58(),
       denominatedInSol: "true",
-      amount: formValues.initialBuy,
+      amount: formValues.initialBuy > 0 ? formValues.initialBuy : 0,
       slippage: formValues.slippage,
       priorityFee: 0.0005,
       pool: "pump",
