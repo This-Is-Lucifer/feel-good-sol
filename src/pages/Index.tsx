@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Shield, BarChart3, Users, MessageCircle, TrendingUp, Heart, Star, Globe, Zap, Menu, X, Rocket } from "lucide-react";
+import { Brain, Shield, BarChart3, Users, MessageCircle, TrendingUp, Heart, Star, Globe, Zap, Menu, X, Rocket, Crown } from "lucide-react";
 import AvatarOrb from "@/components/AvatarOrb";
 import ChatInterface from "@/components/ChatInterface";
 import WalletConnect from "@/components/WalletConnect";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showTokenDialog, setShowTokenDialog] = useState(false);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -133,7 +136,10 @@ const Index = () => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-14 mb-14 w-full max-w-md"
         >
-          <div className="relative p-5 rounded-2xl border border-primary/20 bg-card/40 backdrop-blur-sm text-center overflow-hidden">
+          <div
+            onClick={() => setShowTokenDialog(true)}
+            className="relative p-5 rounded-2xl border border-primary/20 bg-card/40 backdrop-blur-sm text-center overflow-hidden cursor-pointer hover:border-primary/40 transition-colors"
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
             <div className="relative flex flex-col items-center justify-center gap-2">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -144,6 +150,39 @@ const Index = () => {
             </div>
           </div>
         </motion.div>
+
+        {/* Launch My Token — Platinum Dialog */}
+        <Dialog open={showTokenDialog} onOpenChange={setShowTokenDialog}>
+          <DialogContent className="bg-card border-border max-w-md text-center">
+            <DialogHeader className="items-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-2">
+                <Crown className="w-7 h-7 text-primary" />
+              </div>
+              <DialogTitle className="font-display text-xl text-foreground">
+                Platinum Supporters Only
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground text-sm mt-2 leading-relaxed">
+                The <span className="text-primary font-semibold">Launch My Token</span> feature is exclusively available to <span className="text-primary font-semibold">Platinum Supporters</span> — those who have donated at least <span className="text-foreground font-semibold">1 SOL</span> to help grow the MindFi project.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-4 flex flex-col gap-3">
+              <Link
+                to="/support"
+                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-display font-semibold text-sm hover:bg-primary/90 transition-colors"
+                onClick={() => setShowTokenDialog(false)}
+              >
+                <Heart className="w-4 h-4" />
+                Become a Platinum Supporter
+              </Link>
+              <button
+                onClick={() => setShowTokenDialog(false)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors font-display"
+              >
+                Maybe later
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Feature Cards */}
         <motion.div
