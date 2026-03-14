@@ -167,7 +167,7 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
 
       const result = await launchToken(
         provider,
-        { name, symbol, description, twitter, telegram, website },
+        { name, symbol, description, twitter, telegram, website, initialBuy: parseFloat(initialBuy) || 0, slippage: parseFloat(slippage) || 10 },
         imageFile
       );
 
