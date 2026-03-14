@@ -339,54 +339,61 @@ const PersonalizedIntelligence = () => {
     setShowReport(false);
     setRevealedSections(0);
 
-    // Build prompt from check-in data
-    const answersText = checkinData.length > 0
-      ? checkinData.map((a) => `Q: ${a.question}\nA: ${a.answer}`).join("\n\n")
-      : "No check-in data available.";
+    const iconMap: Record<string, typeof Brain> = {
+      "Emotional Stability": Heart,
+      "FOMO Resistance": Shield,
+      "Risk Tolerance Alignment": AlertTriangle,
+      "Decision Quality": TrendingUp,
+      "Stress Recovery": Zap,
+    };
+    const colorMap: Record<string, string> = {
+      "Emotional Stability": "text-primary",
+      "FOMO Resistance": "text-emerald-400",
+      "Risk Tolerance Alignment": "text-yellow-400",
+      "Decision Quality": "text-blue-400",
+      "Stress Recovery": "text-purple-400",
+    };
 
     try {
-      const response = await fetch("https://308e-119-42-59-192.ngrok-free.app/api/ollama", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: "You are MindFi, an AI emotional intelligence analyst for crypto traders. Analyze the user's emotional check-in responses and provide a personalized trading psychology assessment. Be empathetic, specific, and actionable. Format your response in clean, well-structured Markdown. Use headings (##), bullet points, bold text for key insights, and blockquotes for recommendations. Include emojis sparingly to make it engaging. Structure the report with clear sections: Emotional Overview, FOMO & Impulse Analysis, Risk Behavior, Decision Quality, and Actionable Recommendations.",
-          prompt: `Here are the user's emotional check-in responses:\n\n${answersText}\n\nProvide a personalized emotional intelligence assessment for this trader.`,
-        }),
+      const { data, error } = await supabase.functions.invoke("generate-report", {
+        body: {
+          checkinData,
+          imageBase64: selfieImage || undefined,
+        },
       });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+      if (error) throw error;
+
+      if (data?.sections && Array.isArray(data.sections)) {
+        const aiReport: ReportSection[] = data.sections.map((s: any) => ({
+          title: s.title,
+          icon: iconMap[s.title] || Brain,
+          color: colorMap[s.title] || "text-primary",
+          score: Math.max(0, Math.min(100, Math.round(s.score))),
+          insight: s.insight,
+          recommendation: s.recommendation,
+        }));
+
+        setReport(aiReport);
+        setGenerating(false);
+        setShowReport(true);
+
+        aiReport.forEach((_, i) => {
+          setTimeout(() => setRevealedSections(i + 1), 400 * (i + 1));
+        });
+      } else {
+        throw new Error("Invalid response format");
       }
-
-      const data = await response.json();
-      console.log("Ollama response:", data);
-
-      // Extract AI text from response
-      const aiText = typeof data === "string" ? data : data.response || data.message?.content || JSON.stringify(data);
-
-      // Use AI response as the insight for a single overview section, plus local scores
-      const localReport = generateDynamicReport(checkinData);
-      // Replace the first section's insight with the AI response
-      if (localReport.length > 0) {
-        localReport[0].insight = aiText;
-      }
-
-      setReport(localReport);
-      setGenerating(false);
-      setShowReport(true);
-
-      localReport.forEach((_, i) => {
-        setTimeout(() => setRevealedSections(i + 1), 400 * (i + 1));
-      });
     } catch (err) {
       console.error("Report generation failed:", err);
+      // Fallback to local analysis
       const generated = generateDynamicReport(checkinData);
       setReport(generated);
       setGenerating(false);
       setShowReport(true);
       toast({
-        title: "AI endpoint unavailable",
-        description: "Used local analysis instead. Make sure the Ollama endpoint is running.",
+        title: "AI report unavailable",
+        description: "Used local analysis instead. Please try again later.",
         variant: "destructive",
       });
 
