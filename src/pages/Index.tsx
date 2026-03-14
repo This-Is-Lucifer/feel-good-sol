@@ -12,6 +12,17 @@ const Index = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showTokenDialog, setShowTokenDialog] = useState(false);
+  const [deploymentCount, setDeploymentCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const { count, error } = await supabase
+        .from("token_deployments")
+        .select("*", { count: "exact", head: true });
+      if (!error && count !== null) setDeploymentCount(count);
+    };
+    fetchCount();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
