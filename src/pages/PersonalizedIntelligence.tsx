@@ -501,27 +501,7 @@ const PersonalizedIntelligence = () => {
               <Brain className="w-4 h-4" />
               Generate My Report
             </button>
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="inline-block">
-                    <button
-                      onClick={() => setShowTokenDialog(true)}
-                      disabled={!walletConnected}
-                      className="flex items-center gap-2 px-8 py-3.5 rounded-xl border border-primary/30 bg-primary/10 text-primary font-display font-semibold text-sm hover:bg-primary/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      <Rocket className="w-4 h-4" />
-                      Launch My Token
-                    </button>
-                  </span>
-                </TooltipTrigger>
-                {!walletConnected && (
-                  <TooltipContent side="bottom" className="text-xs">
-                    Connect your Phantom wallet first
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
+            
           </motion.div>
         )}
 
