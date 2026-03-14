@@ -233,7 +233,7 @@ const Index = () => {
           className="text-center mb-16"
         >
           <a
-            href="https://t.me/MindFi"
+            href="https://x.com/mindfiai"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-display mb-6 hover:bg-primary/10 transition-colors cursor-pointer"
