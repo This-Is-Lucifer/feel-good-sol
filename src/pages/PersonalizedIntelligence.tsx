@@ -472,28 +472,40 @@ const PersonalizedIntelligence = () => {
                 <p className="text-xs uppercase tracking-widest font-display text-primary font-semibold mb-3">
                   Detected Emotions
                 </p>
-                {[
-                  { label: "Calm", confidence: 72, icon: Smile, color: "text-primary" },
-                  { label: "Focused", confidence: 18, icon: Meh, color: "text-muted-foreground" },
-                  { label: "Anxious", confidence: 7, icon: AlertTriangle, color: "text-yellow-400" },
-                  { label: "Stressed", confidence: 3, icon: Frown, color: "text-destructive" },
-                ].map((e) => (
-                  <div key={e.label} className="flex items-center gap-3">
-                    <e.icon className={`w-4 h-4 ${e.color} shrink-0`} />
-                    <span className="text-sm text-foreground w-20 shrink-0">{e.label}</span>
-                    <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${e.confidence}%` }}
-                        transition={{ duration: 0.8, delay: 0.3 }}
-                        className="h-full rounded-full bg-primary/60"
-                      />
-                    </div>
-                    <span className="text-xs text-muted-foreground w-10 text-right font-display">{e.confidence}%</span>
+                {analyzingEmotion ? (
+                  <div className="flex items-center gap-2 py-4">
+                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                    <span className="text-sm text-muted-foreground">Analyzing facial expression...</span>
                   </div>
-                ))}
+                ) : (
+                  (emotionAnalysis?.emotions ?? [
+                    { label: "Calm", confidence: 72 },
+                    { label: "Focused", confidence: 18 },
+                    { label: "Anxious", confidence: 7 },
+                    { label: "Stressed", confidence: 3 },
+                  ]).map((e) => {
+                    const IconComp = emotionIconMap[e.label] || Meh;
+                    const color = emotionColorMap[e.label] || "text-muted-foreground";
+                    return (
+                      <div key={e.label} className="flex items-center gap-3">
+                        <IconComp className={`w-4 h-4 ${color} shrink-0`} />
+                        <span className="text-sm text-foreground w-20 shrink-0">{e.label}</span>
+                        <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${e.confidence}%` }}
+                            transition={{ duration: 0.8, delay: 0.3 }}
+                            className="h-full rounded-full bg-primary/60"
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground w-10 text-right font-display">{e.confidence}%</span>
+                      </div>
+                    );
+                  })
+                )}
                 <p className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border/50">
-                  Primary emotion: <span className="text-primary font-semibold">Calm</span> — You appear emotionally grounded for trading decisions.
+                  Primary emotion: <span className="text-primary font-semibold">{emotionAnalysis?.primaryEmotion ?? "Analyzing..."}</span>
+                  {emotionAnalysis?.summary && <> — {emotionAnalysis.summary}</>}
                 </p>
               </div>
             </div>
