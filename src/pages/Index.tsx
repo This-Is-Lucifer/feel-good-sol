@@ -148,7 +148,7 @@ const Index = () => {
               <p className="font-display font-semibold text-foreground">Total MindFi Token Deployments</p>
               <p className="font-display text-3xl font-bold text-primary">1</p>
             </div>
-          </div>
+          </Link>
         </motion.div>
 
         {/* Launch My Token — Platinum Dialog */}
