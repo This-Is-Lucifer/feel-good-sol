@@ -139,7 +139,7 @@ const Index = () => {
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Rocket className="w-5 h-5 text-primary" />
               </div>
-              <p className="text-xs text-muted-foreground font-body">Total MindFi Token Deployments</p>
+              <p className="font-display font-semibold text-foreground">Total MindFi Token Deployments</p>
               <p className="font-display text-3xl font-bold text-primary">1</p>
             </div>
           </div>
