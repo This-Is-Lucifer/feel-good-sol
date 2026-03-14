@@ -258,26 +258,26 @@ const EmotionalAI = () => {
       const dataUrl = canvasRef.current.toDataURL("image/png");
       setCapturedImage(dataUrl);
 
-      // Stop camera
       const stream = videoRef.current.srcObject as MediaStream;
       stream?.getTracks().forEach((t) => t.stop());
       setCameraActive(false);
 
-      // Simulate analysis delay
-      setTimeout(() => setShowAnalysis(true), 1500);
+      analyzeEmotion(dataUrl);
     }
-  }, []);
+  }, [analyzeEmotion]);
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      setCapturedImage(reader.result as string);
+      const dataUrl = reader.result as string;
+      setCapturedImage(dataUrl);
       setCameraError(false);
-      setTimeout(() => setShowAnalysis(true), 1500);
+      analyzeEmotion(dataUrl);
     };
     reader.readAsDataURL(file);
+  }, [analyzeEmotion]);
   }, []);
 
   const retakePhoto = useCallback(() => {
