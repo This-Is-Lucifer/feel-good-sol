@@ -128,9 +128,9 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
   const [description, setDescription] = useState("");
-  const [twitter, setTwitter] = useState("");
+  const [twitter, setTwitter] = useState("https://www.x.com/mindfiai");
   const [telegram, setTelegram] = useState("");
-  const [website, setWebsite] = useState("");
+  const [website, setWebsite] = useState("https://www.mindfi.fun");
   const [launching, setLaunching] = useState(false);
   const [initialBuy, setInitialBuy] = useState("0");
   const [slippage, setSlippage] = useState("10");
