@@ -378,9 +378,16 @@ const PersonalizedIntelligence = () => {
             transition={{ delay: 0.1 }}
             className="mb-8 p-5 md:p-6 rounded-2xl border border-border bg-card/40 backdrop-blur-sm"
           >
-            <div className="flex items-center gap-2 mb-4">
-              <ClipboardList className="w-4 h-4 text-primary" />
-              <h2 className="font-display font-semibold text-sm text-foreground">Your Check-in Responses</h2>
+            <div className="flex items-center gap-3 mb-4">
+              {selfieImage && (
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-primary/30 shrink-0">
+                  <img src={selfieImage} alt="Your selfie" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-primary" />
+                <h2 className="font-display font-semibold text-sm text-foreground">Your Check-in Responses</h2>
+              </div>
             </div>
             <div className="space-y-3">
               {checkinData.map((item, i) => (
