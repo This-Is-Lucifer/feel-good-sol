@@ -223,7 +223,7 @@ const ChatInterface = () => {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
         </span>
-        <span className="text-sm font-display font-medium text-foreground/80">MindFi AI</span>
+        <span className="text-sm font-display font-medium text-foreground/80">MindFi AI - Your Wellness Companion</span>
         <button
           onClick={() => {
             window.speechSynthesis.cancel();
