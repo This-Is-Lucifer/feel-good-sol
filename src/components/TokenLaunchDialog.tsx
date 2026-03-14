@@ -128,9 +128,9 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
   const [description, setDescription] = useState("");
-  const [twitter, setTwitter] = useState("");
+  const [twitter, setTwitter] = useState("https://www.x.com/mindfiai");
   const [telegram, setTelegram] = useState("");
-  const [website, setWebsite] = useState("");
+  const [website, setWebsite] = useState("https://www.mindfi.fun");
   const [launching, setLaunching] = useState(false);
   const [initialBuy, setInitialBuy] = useState("0");
   const [slippage, setSlippage] = useState("10");
@@ -370,15 +370,23 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
           </div>
 
           <div>
-            <label className="text-xs font-display font-medium text-muted-foreground mb-1 block">
-              Twitter / X
-            </label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <label className="text-xs font-display font-medium text-muted-foreground mb-1 flex items-center gap-1 cursor-help">
+                    Twitter / X
+                    <Lock className="w-3 h-3 text-muted-foreground/50" />
+                  </label>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  Only Platinum Members can edit
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <input
-              value={twitter}
-              onChange={(e) => setTwitter(e.target.value)}
-              placeholder="https://x.com/yourtoken"
-              className={inputClass}
-              disabled={launching}
+              value="https://www.x.com/mindfiai"
+              className={`${inputClass} opacity-50 cursor-not-allowed`}
+              disabled
             />
           </div>
 
@@ -396,15 +404,23 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
           </div>
 
           <div>
-            <label className="text-xs font-display font-medium text-muted-foreground mb-1 block">
-              Website
-            </label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <label className="text-xs font-display font-medium text-muted-foreground mb-1 flex items-center gap-1 cursor-help">
+                    Website
+                    <Lock className="w-3 h-3 text-muted-foreground/50" />
+                  </label>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  Only Platinum Members can edit
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <input
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              placeholder="https://yourtoken.com"
-              className={inputClass}
-              disabled={launching}
+              value="https://www.mindfi.fun"
+              className={`${inputClass} opacity-50 cursor-not-allowed`}
+              disabled
             />
           </div>
         </div>
