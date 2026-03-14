@@ -16,7 +16,7 @@ const INITIAL_MESSAGE: Message = {
   content: "Hey there 👋 I'm MindFi — your crypto wellness companion. How are you feeling about the markets today?",
 };
 
-const SYSTEM_MESSAGE = "You are MindFi, an empathetic and supportive AI assistant for crypto traders. Your role is to help users manage stress, anxiety, and emotional decision-making while trading. Provide concise, practical guidance, stay understanding and calm, and tailor responses to the user's emotional state and trading context. Keep your tone conversational, friendly, and encouraging.";
+
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
