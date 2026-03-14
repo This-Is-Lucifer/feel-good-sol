@@ -136,9 +136,9 @@ const Index = () => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-14 mb-14 w-full max-w-md"
         >
-          <div
-            onClick={() => setShowTokenDialog(true)}
-            className="relative p-5 rounded-2xl border border-primary/20 bg-card/40 backdrop-blur-sm text-center overflow-hidden cursor-pointer hover:border-primary/40 transition-colors"
+          <Link
+            to="/personalized-intelligence"
+            className="relative p-5 rounded-2xl border border-primary/20 bg-card/40 backdrop-blur-sm text-center overflow-hidden cursor-pointer hover:border-primary/40 transition-colors block"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
             <div className="relative flex flex-col items-center justify-center gap-2">
