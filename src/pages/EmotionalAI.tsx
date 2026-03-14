@@ -195,9 +195,31 @@ const EmotionalAI = () => {
   const [cameraActive, setCameraActive] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [analyzingEmotion, setAnalyzingEmotion] = useState(false);
+  const [emotionResult, setEmotionResult] = useState<EmotionResult | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const analyzeEmotion = useCallback(async (imageBase64: string) => {
+    setAnalyzingEmotion(true);
+    setShowAnalysis(false);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-emotion", {
+        body: { imageBase64 },
+      });
+      if (error) throw error;
+      if (data?.emotions) {
+        setEmotionResult(data as EmotionResult);
+      }
+    } catch (err) {
+      console.error("Emotion analysis failed:", err);
+      toast({ title: "Emotion analysis failed", description: "Could not analyze facial expression.", variant: "destructive" });
+    } finally {
+      setAnalyzingEmotion(false);
+      setShowAnalysis(true);
+    }
+  }, []);
 
   const q = questions[currentQ];
 
