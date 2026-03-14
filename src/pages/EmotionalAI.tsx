@@ -251,16 +251,20 @@ const EmotionalAI = () => {
     setAnswers((prev) => ({ ...prev, [q.id]: val }));
   };
 
+  const isCurrentAnswered = () => {
+    if (q.type === "camera") return !!capturedImage;
+    return answers[q.id] !== undefined && answers[q.id] !== "";
+  };
+
   const next = () => {
+    if (!isCurrentAnswered()) return;
     if (currentQ < questions.length - 1) setCurrentQ((p) => p + 1);
     else {
       setCompleted(true);
-      // Save answers with question text for the Intelligence page
       const savedData = questions
         .filter((q) => q.type !== "camera")
         .map((q) => ({ question: q.text, answer: answers[q.id] ?? "—", category: q.category }));
       localStorage.setItem("MindFi_checkin", JSON.stringify(savedData));
-      // Save captured image if available
       if (capturedImage) {
         localStorage.setItem("MindFi_selfie", capturedImage);
       }
