@@ -216,7 +216,7 @@ const ChatInterface = () => {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-lg h-[400px] md:h-[440px] rounded-2xl border border-border bg-card/60 backdrop-blur-xl overflow-hidden">
+    <div className="flex flex-col w-full max-w-xl md:max-w-2xl h-[400px] md:h-[480px] rounded-2xl border border-border bg-card/60 backdrop-blur-xl overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-2 px-5 py-3 border-b border-border">
         <span className="relative flex h-2 w-2">
