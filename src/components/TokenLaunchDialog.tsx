@@ -177,7 +177,16 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
 
       toast({
         title: "Token Launched! 🚀",
-        description: `Mint: ${result.mint.slice(0, 8)}...`,
+        description: (
+          <div className="flex flex-col gap-1">
+            <a href={`https://solscan.io/tx/${result.signature}`} target="_blank" rel="noopener noreferrer" className="text-primary underline text-xs flex items-center gap-1">
+              View Transaction <ExternalLink className="w-3 h-3" />
+            </a>
+            <a href={`https://solscan.io/token/${result.mint}`} target="_blank" rel="noopener noreferrer" className="text-primary underline text-xs flex items-center gap-1">
+              View Token ({result.mint.slice(0, 8)}...) <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        ),
       });
       onOpenChange(false);
       // Reset form
