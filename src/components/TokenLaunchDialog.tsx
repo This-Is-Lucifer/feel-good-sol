@@ -186,6 +186,19 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
         imageFile
       );
 
+      // Record deployment in database
+      try {
+        await supabase.from("token_deployments").insert({
+          wallet_address: provider.publicKey.toString(),
+          token_mint: result.mint,
+          token_name: name,
+          token_symbol: symbol,
+          tx_signature: result.signature,
+        });
+      } catch (dbErr) {
+        console.error("Failed to record deployment:", dbErr);
+      }
+
       toast({
         title: "Token Launched! 🚀",
         description: (

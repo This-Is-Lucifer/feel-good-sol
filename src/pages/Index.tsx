@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Shield, BarChart3, Users, MessageCircle, TrendingUp, Heart, Star, Globe, Zap, Menu, X, Rocket, Crown } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import AvatarOrb from "@/components/AvatarOrb";
 import ChatInterface from "@/components/ChatInterface";
 import WalletConnect from "@/components/WalletConnect";
@@ -11,6 +12,17 @@ const Index = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showTokenDialog, setShowTokenDialog] = useState(false);
+  const [deploymentCount, setDeploymentCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const { count, error } = await supabase
+        .from("token_deployments")
+        .select("*", { count: "exact", head: true });
+      if (!error && count !== null) setDeploymentCount(count);
+    };
+    fetchCount();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -146,7 +158,7 @@ const Index = () => {
                 <Rocket className="w-5 h-5 text-primary" />
               </div>
               <p className="font-display font-semibold text-foreground">Total MindFi Token Deployments</p>
-              <p className="font-display text-3xl font-bold text-primary">1</p>
+              <p className="font-display text-3xl font-bold text-primary">{deploymentCount ?? "—"}</p>
             </div>
           </Link>
         </motion.div>
