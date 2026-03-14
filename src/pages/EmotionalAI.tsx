@@ -1,8 +1,30 @@
 import { useState, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Camera, ChevronRight, ChevronLeft, Smile, Frown, Meh, AlertTriangle, TrendingUp, X, Upload, RotateCcw } from "lucide-react";
+import { Brain, Camera, ChevronRight, ChevronLeft, Smile, Frown, Meh, AlertTriangle, TrendingUp, X, Upload, RotateCcw, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
+interface DetectedEmotion {
+  label: string;
+  confidence: number;
+}
+
+interface EmotionResult {
+  emotions: DetectedEmotion[];
+  primaryEmotion: string;
+  summary: string;
+}
+
+const emotionIconMap: Record<string, typeof Smile> = {
+  Calm: Smile, Happy: Smile, Focused: Meh, Neutral: Meh,
+  Anxious: AlertTriangle, Stressed: Frown, Sad: Frown, Angry: Frown, Surprised: Smile,
+};
+
+const emotionColorMap: Record<string, string> = {
+  Calm: "text-primary", Happy: "text-primary", Focused: "text-blue-400", Neutral: "text-muted-foreground",
+  Anxious: "text-yellow-400", Stressed: "text-destructive", Sad: "text-destructive", Angry: "text-destructive", Surprised: "text-purple-400",
+};
 interface Question {
   id: number;
   text: string;
@@ -152,12 +174,6 @@ function shuffleAndPick<T>(arr: T[], count: number): T[] {
   return shuffled.slice(0, count);
 }
 
-const mockEmotions = [
-  { label: "Calm", confidence: 72, icon: Smile, color: "text-primary" },
-  { label: "Focused", confidence: 18, icon: Meh, color: "text-muted-foreground" },
-  { label: "Anxious", confidence: 7, icon: AlertTriangle, color: "text-yellow-400" },
-  { label: "Stressed", confidence: 3, icon: Frown, color: "text-destructive" },
-];
 
 const EmotionalAI = () => {
   // Camera first + 9 random choice-only questions = 10 total
@@ -173,9 +189,31 @@ const EmotionalAI = () => {
   const [cameraActive, setCameraActive] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [analyzingEmotion, setAnalyzingEmotion] = useState(false);
+  const [emotionResult, setEmotionResult] = useState<EmotionResult | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const analyzeEmotion = useCallback(async (imageBase64: string) => {
+    setAnalyzingEmotion(true);
+    setShowAnalysis(false);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-emotion", {
+        body: { imageBase64 },
+      });
+      if (error) throw error;
+      if (data?.emotions) {
+        setEmotionResult(data as EmotionResult);
+      }
+    } catch (err) {
+      console.error("Emotion analysis failed:", err);
+      toast({ title: "Emotion analysis failed", description: "Could not analyze facial expression.", variant: "destructive" });
+    } finally {
+      setAnalyzingEmotion(false);
+      setShowAnalysis(true);
+    }
+  }, []);
 
   const q = questions[currentQ];
 
@@ -214,27 +252,26 @@ const EmotionalAI = () => {
       const dataUrl = canvasRef.current.toDataURL("image/png");
       setCapturedImage(dataUrl);
 
-      // Stop camera
       const stream = videoRef.current.srcObject as MediaStream;
       stream?.getTracks().forEach((t) => t.stop());
       setCameraActive(false);
 
-      // Simulate analysis delay
-      setTimeout(() => setShowAnalysis(true), 1500);
+      analyzeEmotion(dataUrl);
     }
-  }, []);
+  }, [analyzeEmotion]);
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      setCapturedImage(reader.result as string);
+      const dataUrl = reader.result as string;
+      setCapturedImage(dataUrl);
       setCameraError(false);
-      setTimeout(() => setShowAnalysis(true), 1500);
+      analyzeEmotion(dataUrl);
     };
     reader.readAsDataURL(file);
-  }, []);
+  }, [analyzeEmotion]);
 
   const retakePhoto = useCallback(() => {
     setCapturedImage(null);
@@ -459,42 +496,49 @@ const EmotionalAI = () => {
                         </button>
                       </div>
 
-                      {!showAnalysis && (
+                      {analyzingEmotion && (
                         <div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground text-sm">
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                            className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full"
-                          />
-                          Analyzing facial expression...
+                          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                          Analyzing facial expression with AI...
                         </div>
                       )}
 
-                      {showAnalysis && (
+                      {showAnalysis && !analyzingEmotion && emotionResult && (
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           className="mt-4 p-4 rounded-xl border border-border bg-secondary/50 space-y-3"
                         >
                           <p className="text-xs uppercase tracking-widest font-display text-primary font-semibold">
-                            Emotion Analysis
+                            AI Emotion Analysis
                           </p>
-                          {mockEmotions.map((e) => (
-                            <div key={e.label} className="flex items-center gap-3">
-                              <e.icon className={`w-4 h-4 ${e.color}`} />
-                              <span className="text-sm text-foreground w-20">{e.label}</span>
-                              <div className="flex-1 h-2 rounded-full bg-background">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${e.confidence}%` }}
-                                  transition={{ duration: 0.8, delay: 0.2 }}
-                                  className="h-full rounded-full bg-primary/60"
-                                />
+                          {emotionResult.emotions.map((e) => {
+                            const IconComp = emotionIconMap[e.label] || Meh;
+                            const color = emotionColorMap[e.label] || "text-muted-foreground";
+                            return (
+                              <div key={e.label} className="flex items-center gap-3">
+                                <IconComp className={`w-4 h-4 ${color}`} />
+                                <span className="text-sm text-foreground w-20">{e.label}</span>
+                                <div className="flex-1 h-2 rounded-full bg-background">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${e.confidence}%` }}
+                                    transition={{ duration: 0.8, delay: 0.2 }}
+                                    className="h-full rounded-full bg-primary/60"
+                                  />
+                                </div>
+                                <span className="text-xs text-muted-foreground w-8 text-right">{e.confidence}%</span>
                               </div>
-                              <span className="text-xs text-muted-foreground w-8 text-right">{e.confidence}%</span>
-                            </div>
-                          ))}
+                            );
+                          })}
+                          <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/50">
+                            Primary: <span className="text-primary font-semibold">{emotionResult.primaryEmotion}</span> — {emotionResult.summary}
+                          </p>
                         </motion.div>
+                      )}
+
+                      {showAnalysis && !analyzingEmotion && !emotionResult && (
+                        <p className="mt-4 text-xs text-destructive text-center">Emotion analysis failed. You can still proceed.</p>
                       )}
                     </div>
                   )}
