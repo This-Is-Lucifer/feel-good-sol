@@ -62,7 +62,7 @@ async function launchToken(
   formData.append("website", formValues.website);
   formData.append("showName", "true");
 
-  const metadataResponse = await fetch("https://pump.fun/api/ipfs", {
+  const metadataResponse = await fetch(`${PUMP_PROXY_URL}?action=ipfs`, {
     method: "POST",
     body: formData,
   });
