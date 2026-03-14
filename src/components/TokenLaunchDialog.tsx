@@ -146,6 +146,16 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
       return;
     }
 
+    const buyAmount = parseFloat(initialBuy) || 0;
+    if (buyAmount > 0 && buyAmount < 0.01) {
+      toast({
+        title: "Invalid initial buy",
+        description: "Initial dev buy must be at least 0.01 SOL, or set to 0 to skip.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!selfieImage) {
       toast({
         title: "No image found",
