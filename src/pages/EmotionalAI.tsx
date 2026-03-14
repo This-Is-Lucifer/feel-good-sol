@@ -518,7 +518,8 @@ const EmotionalAI = () => {
                 </span>
                 <button
                   onClick={next}
-                  className="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-display font-medium hover:bg-primary/90 transition-colors"
+                  disabled={!isCurrentAnswered()}
+                  className="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-display font-medium hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {currentQ === questions.length - 1 ? "Finish" : "Next"}
                   <ChevronRight className="w-4 h-4" />
