@@ -1,8 +1,30 @@
 import { useState, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Camera, ChevronRight, ChevronLeft, Smile, Frown, Meh, AlertTriangle, TrendingUp, X, Upload, RotateCcw } from "lucide-react";
+import { Brain, Camera, ChevronRight, ChevronLeft, Smile, Frown, Meh, AlertTriangle, TrendingUp, X, Upload, RotateCcw, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
+interface DetectedEmotion {
+  label: string;
+  confidence: number;
+}
+
+interface EmotionResult {
+  emotions: DetectedEmotion[];
+  primaryEmotion: string;
+  summary: string;
+}
+
+const emotionIconMap: Record<string, typeof Smile> = {
+  Calm: Smile, Happy: Smile, Focused: Meh, Neutral: Meh,
+  Anxious: AlertTriangle, Stressed: Frown, Sad: Frown, Angry: Frown, Surprised: Smile,
+};
+
+const emotionColorMap: Record<string, string> = {
+  Calm: "text-primary", Happy: "text-primary", Focused: "text-blue-400", Neutral: "text-muted-foreground",
+  Anxious: "text-yellow-400", Stressed: "text-destructive", Sad: "text-destructive", Angry: "text-destructive", Surprised: "text-purple-400",
+};
 interface Question {
   id: number;
   text: string;
