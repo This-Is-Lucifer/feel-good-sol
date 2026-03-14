@@ -527,9 +527,16 @@ const EmotionalAI = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="p-8 rounded-2xl border border-border bg-card/60 backdrop-blur-sm text-center"
           >
-            <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-5">
-              <TrendingUp className="w-7 h-7 text-primary" />
-            </div>
+            {capturedImage && (
+              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30 mx-auto mb-5">
+                <img src={capturedImage} alt="Your selfie" className="w-full h-full object-cover" />
+              </div>
+            )}
+            {!capturedImage && (
+              <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-5">
+                <TrendingUp className="w-7 h-7 text-primary" />
+              </div>
+            )}
             <h2 className="font-display text-2xl font-bold text-foreground mb-3">Check-in Complete</h2>
             <p className="text-muted-foreground text-sm mb-6 max-w-sm mx-auto">
               Your emotional profile has been captured. In a full version, this data would generate personalized trading insights.
