@@ -126,6 +126,27 @@ const Index = () => {
           )}
         </motion.div>
 
+        {/* Token Deployment Counter */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-14 mb-14 w-full max-w-md"
+        >
+          <div className="relative p-5 rounded-2xl border border-primary/20 bg-card/40 backdrop-blur-sm text-center overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
+            <div className="relative flex items-center justify-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Rocket className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs text-muted-foreground font-body">Total MindFi Token Deployments</p>
+                <p className="font-display text-2xl font-bold text-primary">1</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Feature Cards */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
