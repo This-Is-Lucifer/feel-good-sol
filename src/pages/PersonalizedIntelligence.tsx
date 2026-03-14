@@ -150,6 +150,7 @@ const PersonalizedIntelligence = () => {
   const [revealedSections, setRevealedSections] = useState(0);
   const [checkinData, setCheckinData] = useState<CheckinAnswer[]>([]);
   const [report, setReport] = useState<ReportSection[]>([]);
+  const [showTokenDialog, setShowTokenDialog] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
   const stripMarkdown = (text: string) =>
