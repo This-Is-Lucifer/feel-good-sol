@@ -212,7 +212,7 @@ const ChatInterface = () => {
 
   const handleClear = () => {
     window.speechSynthesis.cancel();
-    setMessages([INITIAL_MESSAGE]);
+    setMessages([]);
   };
 
   return (
