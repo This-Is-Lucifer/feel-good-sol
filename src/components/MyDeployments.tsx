@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Copy, Check } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import {
   Table,
   TableBody,
@@ -23,6 +24,7 @@ const MyDeployments = () => {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkWallet = () => {
@@ -60,11 +62,18 @@ const MyDeployments = () => {
 
   if (!walletAddress || deployments.length === 0) return null;
 
-  const truncate = (str: string, len = 8) =>
+  const truncate = (str: string, len = 6) =>
     str.length > len * 2 ? `${str.slice(0, len)}...${str.slice(-len)}` : str;
 
+  const copyCA = (mint: string, id: string) => {
+    navigator.clipboard.writeText(mint);
+    setCopiedId(id);
+    toast({ title: "Copied!", description: "Contract address copied to clipboard." });
+    setTimeout(() => setCopiedId(null), 1500);
+  };
+
   return (
-    <div className="w-full max-w-2xl mt-6">
+    <div className="w-full mt-6">
       <div className="rounded-2xl border border-border bg-card/40 backdrop-blur-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-border">
           <h3 className="font-display font-semibold text-sm text-foreground">
@@ -75,10 +84,10 @@ const MyDeployments = () => {
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-xs font-display text-muted-foreground">Name</TableHead>
-                <TableHead className="text-xs font-display text-muted-foreground">Ticker</TableHead>
-                <TableHead className="text-xs font-display text-muted-foreground">CA</TableHead>
-                <TableHead className="text-xs font-display text-muted-foreground text-right">Solscan</TableHead>
+                <TableHead className="text-xs font-display text-muted-foreground w-[30%]">Name</TableHead>
+                <TableHead className="text-xs font-display text-muted-foreground w-[15%]">Ticker</TableHead>
+                <TableHead className="text-xs font-display text-muted-foreground w-[40%]">CA</TableHead>
+                <TableHead className="text-xs font-display text-muted-foreground text-right w-[15%]">Solscan</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -90,8 +99,18 @@ const MyDeployments = () => {
                   <TableCell className="font-mono text-sm text-primary">
                     {d.token_symbol ? `$${d.token_symbol}` : "—"}
                   </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {truncate(d.token_mint)}
+                  <TableCell>
+                    <button
+                      onClick={() => copyCA(d.token_mint, d.id)}
+                      className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
+                    >
+                      <span>{truncate(d.token_mint)}</span>
+                      {copiedId === d.id ? (
+                        <Check className="w-3.5 h-3.5 text-primary" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      )}
+                    </button>
                   </TableCell>
                   <TableCell className="text-right">
                     {d.tx_signature ? (
