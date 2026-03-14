@@ -160,9 +160,10 @@ const mockEmotions = [
 ];
 
 const EmotionalAI = () => {
-  // Camera first + 9 random questions = 10 total
+  // Camera first + 9 random choice-only questions = 10 total
   const questions = useMemo(() => {
-    const picked = shuffleAndPick(questionPool, 9);
+    const choiceQuestions = questionPool.filter((q) => q.type === "choice");
+    const picked = shuffleAndPick(choiceQuestions, 9);
     return [cameraQuestion, ...picked];
   }, []);
 
@@ -250,16 +251,20 @@ const EmotionalAI = () => {
     setAnswers((prev) => ({ ...prev, [q.id]: val }));
   };
 
+  const isCurrentAnswered = () => {
+    if (q.type === "camera") return !!capturedImage;
+    return answers[q.id] !== undefined && answers[q.id] !== "";
+  };
+
   const next = () => {
+    if (!isCurrentAnswered()) return;
     if (currentQ < questions.length - 1) setCurrentQ((p) => p + 1);
     else {
       setCompleted(true);
-      // Save answers with question text for the Intelligence page
       const savedData = questions
         .filter((q) => q.type !== "camera")
         .map((q) => ({ question: q.text, answer: answers[q.id] ?? "—", category: q.category }));
       localStorage.setItem("MindFi_checkin", JSON.stringify(savedData));
-      // Save captured image if available
       if (capturedImage) {
         localStorage.setItem("MindFi_selfie", capturedImage);
       }
@@ -513,7 +518,8 @@ const EmotionalAI = () => {
                 </span>
                 <button
                   onClick={next}
-                  className="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-display font-medium hover:bg-primary/90 transition-colors"
+                  disabled={!isCurrentAnswered()}
+                  className="flex items-center gap-1 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-display font-medium hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {currentQ === questions.length - 1 ? "Finish" : "Next"}
                   <ChevronRight className="w-4 h-4" />
