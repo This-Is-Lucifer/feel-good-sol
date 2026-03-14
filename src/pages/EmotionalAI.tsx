@@ -502,42 +502,49 @@ const EmotionalAI = () => {
                         </button>
                       </div>
 
-                      {!showAnalysis && (
+                      {analyzingEmotion && (
                         <div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground text-sm">
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                            className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full"
-                          />
-                          Analyzing facial expression...
+                          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                          Analyzing facial expression with AI...
                         </div>
                       )}
 
-                      {showAnalysis && (
+                      {showAnalysis && !analyzingEmotion && emotionResult && (
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           className="mt-4 p-4 rounded-xl border border-border bg-secondary/50 space-y-3"
                         >
                           <p className="text-xs uppercase tracking-widest font-display text-primary font-semibold">
-                            Emotion Analysis
+                            AI Emotion Analysis
                           </p>
-                          {mockEmotions.map((e) => (
-                            <div key={e.label} className="flex items-center gap-3">
-                              <e.icon className={`w-4 h-4 ${e.color}`} />
-                              <span className="text-sm text-foreground w-20">{e.label}</span>
-                              <div className="flex-1 h-2 rounded-full bg-background">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${e.confidence}%` }}
-                                  transition={{ duration: 0.8, delay: 0.2 }}
-                                  className="h-full rounded-full bg-primary/60"
-                                />
+                          {emotionResult.emotions.map((e) => {
+                            const IconComp = emotionIconMap[e.label] || Meh;
+                            const color = emotionColorMap[e.label] || "text-muted-foreground";
+                            return (
+                              <div key={e.label} className="flex items-center gap-3">
+                                <IconComp className={`w-4 h-4 ${color}`} />
+                                <span className="text-sm text-foreground w-20">{e.label}</span>
+                                <div className="flex-1 h-2 rounded-full bg-background">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${e.confidence}%` }}
+                                    transition={{ duration: 0.8, delay: 0.2 }}
+                                    className="h-full rounded-full bg-primary/60"
+                                  />
+                                </div>
+                                <span className="text-xs text-muted-foreground w-8 text-right">{e.confidence}%</span>
                               </div>
-                              <span className="text-xs text-muted-foreground w-8 text-right">{e.confidence}%</span>
-                            </div>
-                          ))}
+                            );
+                          })}
+                          <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/50">
+                            Primary: <span className="text-primary font-semibold">{emotionResult.primaryEmotion}</span> — {emotionResult.summary}
+                          </p>
                         </motion.div>
+                      )}
+
+                      {showAnalysis && !analyzingEmotion && !emotionResult && (
+                        <p className="mt-4 text-xs text-destructive text-center">Emotion analysis failed. You can still proceed.</p>
                       )}
                     </div>
                   )}
