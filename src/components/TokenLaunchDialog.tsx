@@ -37,6 +37,8 @@ async function launchToken(
     twitter: string;
     telegram: string;
     website: string;
+    initialBuy: number;
+    slippage: number;
   },
   imageFile: File
 ) {
@@ -83,8 +85,8 @@ async function launchToken(
       },
       mint: mintKeypair.publicKey.toBase58(),
       denominatedInSol: "true",
-      amount: 1,
-      slippage: 10,
+      amount: formValues.initialBuy,
+      slippage: formValues.slippage,
       priorityFee: 0.0005,
       pool: "pump",
     }),
@@ -125,6 +127,8 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
   const [telegram, setTelegram] = useState("");
   const [website, setWebsite] = useState("");
   const [launching, setLaunching] = useState(false);
+  const [initialBuy, setInitialBuy] = useState("0");
+  const [slippage, setSlippage] = useState("10");
 
   const selfieImage = localStorage.getItem("MindFi_selfie");
 
@@ -163,7 +167,7 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
 
       const result = await launchToken(
         provider,
-        { name, symbol, description, twitter, telegram, website },
+        { name, symbol, description, twitter, telegram, website, initialBuy: parseFloat(initialBuy) || 0, slippage: parseFloat(slippage) || 10 },
         imageFile
       );
 
@@ -272,6 +276,46 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
               className={`${inputClass} resize-none`}
               disabled={launching}
             />
+          </div>
+
+          {/* Trading Settings */}
+          <div className="pt-1">
+            <span className="text-[11px] font-display font-semibold text-muted-foreground/70 uppercase tracking-wider">
+              Trading Settings
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-display font-medium text-muted-foreground mb-1 block">
+                Initial Dev Buy (SOL)
+              </label>
+              <input
+                value={initialBuy}
+                onChange={(e) => setInitialBuy(e.target.value)}
+                placeholder="0"
+                type="number"
+                min="0"
+                step="0.1"
+                className={inputClass}
+                disabled={launching}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-display font-medium text-muted-foreground mb-1 block">
+                Slippage (%)
+              </label>
+              <input
+                value={slippage}
+                onChange={(e) => setSlippage(e.target.value)}
+                placeholder="10"
+                type="number"
+                min="1"
+                max="100"
+                className={inputClass}
+                disabled={launching}
+              />
+            </div>
           </div>
 
           {/* Social Links */}
