@@ -194,6 +194,7 @@ const EmotionalAI = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
 
   const analyzeEmotion = useCallback(async (imageBase64: string) => {
     setAnalyzingEmotion(true);
