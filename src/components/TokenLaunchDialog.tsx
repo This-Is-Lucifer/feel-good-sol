@@ -88,7 +88,7 @@ async function launchToken(
       },
       mint: mintKeypair.publicKey.toBase58(),
       denominatedInSol: "true",
-      amount: formValues.initialBuy > 0 ? formValues.initialBuy : 0,
+      amount: formValues.initialBuy >= 0.01 ? formValues.initialBuy : 0,
       slippage: formValues.slippage,
       priorityFee: 0.0005,
       pool: "pump",
@@ -141,6 +141,16 @@ const TokenLaunchDialog = ({ open, onOpenChange }: TokenLaunchDialogProps) => {
       toast({
         title: "Missing fields",
         description: "Token Name and Symbol are required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const buyAmount = parseFloat(initialBuy) || 0;
+    if (buyAmount > 0 && buyAmount < 0.01) {
+      toast({
+        title: "Invalid initial buy",
+        description: "Initial dev buy must be at least 0.01 SOL, or set to 0 to skip.",
         variant: "destructive",
       });
       return;
