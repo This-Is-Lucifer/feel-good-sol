@@ -75,7 +75,7 @@ async function launchToken(
   console.log("Metadata uploaded:", metadata);
 
   // 4. Request create transaction from PumpPortal
-  const response = await fetch("https://pumpportal.fun/api/trade-local", {
+  const response = await fetch(`${PUMP_PROXY_URL}?action=trade`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
