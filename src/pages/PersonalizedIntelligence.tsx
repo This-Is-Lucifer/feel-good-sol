@@ -152,7 +152,19 @@ const PersonalizedIntelligence = () => {
   const [checkinData, setCheckinData] = useState<CheckinAnswer[]>([]);
   const [report, setReport] = useState<ReportSection[]>([]);
   const [showTokenDialog, setShowTokenDialog] = useState(false);
+  const [walletConnected, setWalletConnected] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
+
+  // Check wallet connection status
+  useEffect(() => {
+    const checkWallet = () => {
+      const provider = (window as any)?.phantom?.solana;
+      setWalletConnected(!!provider?.isPhantom && !!provider?.publicKey);
+    };
+    checkWallet();
+    const interval = setInterval(checkWallet, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const stripMarkdown = (text: string) =>
     text.replace(/#{1,6}\s*/g, "").replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").replace(/>\s*/g, "").replace(/- /g, "• ").trim();
