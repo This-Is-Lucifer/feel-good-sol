@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Rocket, Loader2, ExternalLink } from "lucide-react";
+import { Rocket, Loader2, ExternalLink, Lock } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
