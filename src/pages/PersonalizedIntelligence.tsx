@@ -153,6 +153,7 @@ const PersonalizedIntelligence = () => {
   const [report, setReport] = useState<ReportSection[]>([]);
   const [showTokenDialog, setShowTokenDialog] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
+  const [selfieImage, setSelfieImage] = useState<string | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
 
   // Check wallet connection status
