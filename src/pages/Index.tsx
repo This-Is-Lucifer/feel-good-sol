@@ -162,6 +162,7 @@ const Index = () => {
               <p className="font-display text-3xl font-bold text-primary">{deploymentCount ?? "—"}</p>
             </div>
           </Link>
+          <MyDeployments />
         </motion.div>
 
         {/* Launch My Token — Platinum Dialog */}
