@@ -1,12 +1,48 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, RefreshCw, ClipboardList, Download, Rocket, Smile, Frown, Meh, Camera } from "lucide-react";
+import { Brain, TrendingUp, Heart, Shield, AlertTriangle, BarChart3, Zap, RefreshCw, ClipboardList, Download, Rocket, Smile, Frown, Meh, Camera, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import ReactMarkdown from "react-markdown";
 import TokenLaunchDialog from "@/components/TokenLaunchDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { supabase } from "@/integrations/supabase/client";
+
+interface DetectedEmotion {
+  label: string;
+  confidence: number;
+}
+
+interface EmotionAnalysis {
+  emotions: DetectedEmotion[];
+  primaryEmotion: string;
+  summary: string;
+}
+
+const emotionIconMap: Record<string, typeof Smile> = {
+  Calm: Smile,
+  Happy: Smile,
+  Focused: Meh,
+  Neutral: Meh,
+  Anxious: AlertTriangle,
+  Stressed: Frown,
+  Sad: Frown,
+  Angry: Frown,
+  Surprised: Smile,
+};
+
+const emotionColorMap: Record<string, string> = {
+  Calm: "text-primary",
+  Happy: "text-primary",
+  Focused: "text-blue-400",
+  Neutral: "text-muted-foreground",
+  Anxious: "text-yellow-400",
+  Stressed: "text-destructive",
+  Sad: "text-destructive",
+  Angry: "text-destructive",
+  Surprised: "text-purple-400",
+};
 
 interface CheckinAnswer {
   question: string;
@@ -154,6 +190,8 @@ const PersonalizedIntelligence = () => {
   const [showTokenDialog, setShowTokenDialog] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
   const [selfieImage, setSelfieImage] = useState<string | null>(null);
+  const [emotionAnalysis, setEmotionAnalysis] = useState<EmotionAnalysis | null>(null);
+  const [analyzingEmotion, setAnalyzingEmotion] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
   // Check wallet connection status
@@ -260,6 +298,30 @@ const PersonalizedIntelligence = () => {
     toast({ title: "PDF Downloaded", description: "Your report has been saved." });
   };
 
+  const analyzeEmotion = async (imageBase64: string) => {
+    setAnalyzingEmotion(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-emotion", {
+        body: { imageBase64 },
+      });
+
+      if (error) throw error;
+
+      if (data?.emotions) {
+        setEmotionAnalysis(data as EmotionAnalysis);
+      }
+    } catch (err) {
+      console.error("Emotion analysis failed:", err);
+      toast({
+        title: "Emotion analysis unavailable",
+        description: "Using default values. Try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setAnalyzingEmotion(false);
+    }
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem("MindFi_checkin");
     if (saved) {
@@ -268,6 +330,7 @@ const PersonalizedIntelligence = () => {
     const savedSelfie = localStorage.getItem("MindFi_selfie");
     if (savedSelfie) {
       setSelfieImage(savedSelfie);
+      analyzeEmotion(savedSelfie);
     }
   }, []);
 
@@ -409,28 +472,40 @@ const PersonalizedIntelligence = () => {
                 <p className="text-xs uppercase tracking-widest font-display text-primary font-semibold mb-3">
                   Detected Emotions
                 </p>
-                {[
-                  { label: "Calm", confidence: 72, icon: Smile, color: "text-primary" },
-                  { label: "Focused", confidence: 18, icon: Meh, color: "text-muted-foreground" },
-                  { label: "Anxious", confidence: 7, icon: AlertTriangle, color: "text-yellow-400" },
-                  { label: "Stressed", confidence: 3, icon: Frown, color: "text-destructive" },
-                ].map((e) => (
-                  <div key={e.label} className="flex items-center gap-3">
-                    <e.icon className={`w-4 h-4 ${e.color} shrink-0`} />
-                    <span className="text-sm text-foreground w-20 shrink-0">{e.label}</span>
-                    <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${e.confidence}%` }}
-                        transition={{ duration: 0.8, delay: 0.3 }}
-                        className="h-full rounded-full bg-primary/60"
-                      />
-                    </div>
-                    <span className="text-xs text-muted-foreground w-10 text-right font-display">{e.confidence}%</span>
+                {analyzingEmotion ? (
+                  <div className="flex items-center gap-2 py-4">
+                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                    <span className="text-sm text-muted-foreground">Analyzing facial expression...</span>
                   </div>
-                ))}
+                ) : (
+                  (emotionAnalysis?.emotions ?? [
+                    { label: "Calm", confidence: 72 },
+                    { label: "Focused", confidence: 18 },
+                    { label: "Anxious", confidence: 7 },
+                    { label: "Stressed", confidence: 3 },
+                  ]).map((e) => {
+                    const IconComp = emotionIconMap[e.label] || Meh;
+                    const color = emotionColorMap[e.label] || "text-muted-foreground";
+                    return (
+                      <div key={e.label} className="flex items-center gap-3">
+                        <IconComp className={`w-4 h-4 ${color} shrink-0`} />
+                        <span className="text-sm text-foreground w-20 shrink-0">{e.label}</span>
+                        <div className="flex-1 h-2.5 rounded-full bg-secondary overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${e.confidence}%` }}
+                            transition={{ duration: 0.8, delay: 0.3 }}
+                            className="h-full rounded-full bg-primary/60"
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground w-10 text-right font-display">{e.confidence}%</span>
+                      </div>
+                    );
+                  })
+                )}
                 <p className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border/50">
-                  Primary emotion: <span className="text-primary font-semibold">Calm</span> — You appear emotionally grounded for trading decisions.
+                  Primary emotion: <span className="text-primary font-semibold">{emotionAnalysis?.primaryEmotion ?? "Analyzing..."}</span>
+                  {emotionAnalysis?.summary && <> — {emotionAnalysis.summary}</>}
                 </p>
               </div>
             </div>
