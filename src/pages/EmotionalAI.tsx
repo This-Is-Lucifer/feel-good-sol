@@ -174,12 +174,6 @@ function shuffleAndPick<T>(arr: T[], count: number): T[] {
   return shuffled.slice(0, count);
 }
 
-const mockEmotions = [
-  { label: "Calm", confidence: 72, icon: Smile, color: "text-primary" },
-  { label: "Focused", confidence: 18, icon: Meh, color: "text-muted-foreground" },
-  { label: "Anxious", confidence: 7, icon: AlertTriangle, color: "text-yellow-400" },
-  { label: "Stressed", confidence: 3, icon: Frown, color: "text-destructive" },
-];
 
 const EmotionalAI = () => {
   // Camera first + 9 random choice-only questions = 10 total
