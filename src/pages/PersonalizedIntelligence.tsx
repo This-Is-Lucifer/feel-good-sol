@@ -190,6 +190,8 @@ const PersonalizedIntelligence = () => {
   const [showTokenDialog, setShowTokenDialog] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
   const [selfieImage, setSelfieImage] = useState<string | null>(null);
+  const [emotionAnalysis, setEmotionAnalysis] = useState<EmotionAnalysis | null>(null);
+  const [analyzingEmotion, setAnalyzingEmotion] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
   // Check wallet connection status
